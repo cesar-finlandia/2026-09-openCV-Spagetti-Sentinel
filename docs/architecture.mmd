@@ -1,0 +1,41 @@
+flowchart TB
+  subgraph client["Judge's browser"]
+    UI["React UI<br/>live status · confidence timeline<br/>trace view · approve / override"]
+  end
+
+  subgraph aws["AWS — EC2 c7g.xlarge (Graviton, aarch64)"]
+    API["FastAPI<br/>/healthz · /api/runs · /events/stream"]
+    subgraph vision["OpenCV 5 pipeline"]
+      SRC["frame source<br/>file · RTSP · fixture"]
+      OPS["resize · cvtColor · GaussianBlur<br/>MOG2 · threshold · morphology<br/>warpAffine · Sobel · findContours"]
+      COOL["COOL backend<br/>Cloud-Optimized OpenCV Library<br/>(AWS Marketplace, Arm)"]
+      BASE["baseline backend<br/>stock OpenCV 5"]
+      SCORE["VisionScores JSON<br/>spaghetti_score · confidence"]
+    end
+    subgraph agent["Agent loop — perception → decision → action"]
+      TOOLS["MCP-style tool registry<br/>probe_source · detect_roi<br/>score_frame · capture_evidence"]
+      POLICY["deterministic policy<br/>continue · nudge · capture · request pause"]
+      TRACE["trace (JSONL)"]
+    end
+    RAT["Amazon Bedrock<br/>rationale + checklist ONLY"]
+  end
+
+  S3[("Amazon S3<br/>runs/&lt;run_id&gt;/<br/>clip · frame · JSON")]
+  CW[["Amazon CloudWatch Logs"]]
+
+  SRC --> OPS
+  OPS --> COOL
+  OPS --> BASE
+  COOL --> SCORE
+  BASE --> SCORE
+  TOOLS -->|score_frame| OPS
+  SCORE -->|vision JSON| POLICY
+  POLICY -->|action| TOOLS
+  POLICY -->|decision made first| RAT
+  RAT -->|words only, cannot change the action| POLICY
+  TOOLS -->|capture_evidence| S3
+  POLICY --> TRACE
+  API --> TOOLS
+  API -->|EventEnvelope over SSE| UI
+  UI -->|approve / override| API
+  API --> CW
