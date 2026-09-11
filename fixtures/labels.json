@@ -1,0 +1,21 @@
+{
+  "synthetic": true,
+  "labels": {
+    "good-first-layer": {
+      "label": "nominal",
+      "onset_frame": null
+    },
+    "stringing": {
+      "label": "warning",
+      "onset_frame": 120
+    },
+    "spaghetti": {
+      "label": "failure",
+      "onset_frame": 150
+    },
+    "lighting-shift": {
+      "label": "nominal",
+      "onset_frame": null
+    }
+  }
+}

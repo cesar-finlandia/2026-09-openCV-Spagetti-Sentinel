@@ -1,0 +1,55 @@
+{
+  "synthetic": true,
+  "generator": "app/fixtures/generate.py",
+  "generated_at": "2026-09-11T10:57:56Z",
+  "width": 1280,
+  "height": 720,
+  "fps": 30.0,
+  "watermark": "SYNTHETIC \u2014 generated demo footage",
+  "clips": [
+    {
+      "id": "good-first-layer",
+      "path": "fixtures/clips/good-first-layer.mp4",
+      "label": "nominal",
+      "onset_frame": null,
+      "frames": 300,
+      "seed": 101,
+      "sha256": "4d00fe4e57c5a1179bc9570ecc0143a08049c6950e3b2a51f47eac65060f6ed8",
+      "notes": "Steady, regular infill. The agent must never request a pause on this clip.",
+      "ok": true
+    },
+    {
+      "id": "stringing",
+      "path": "fixtures/clips/stringing.mp4",
+      "label": "warning",
+      "onset_frame": 120,
+      "frames": 300,
+      "seed": 202,
+      "sha256": "b22705a8035c84fa95784c3e124c8b85f9a7332f0224a9558594d727f4c90d20",
+      "notes": "Thin wisps appear from frame 120. Expect capture_evidence, not a pause.",
+      "ok": true
+    },
+    {
+      "id": "spaghetti",
+      "path": "fixtures/clips/spaghetti.mp4",
+      "label": "failure",
+      "onset_frame": 150,
+      "frames": 300,
+      "seed": 303,
+      "sha256": "cefe383251983fdbf6b74e5d4b16316c28cae6fe5907f6faac363de58b65e18d",
+      "notes": "Extruded filament detaches from frame 150 and accumulates. Expect a pause request.",
+      "ok": true
+    },
+    {
+      "id": "lighting-shift",
+      "path": "fixtures/clips/lighting-shift.mp4",
+      "label": "nominal",
+      "onset_frame": null,
+      "frames": 300,
+      "seed": 404,
+      "sha256": "d66eac83665c9509c621845b30b8b12677ba5a083fd845c1880c5fea6d08a10a",
+      "notes": "Global brightness ramps \u00b135% with the print unchanged. A false positive here is a defect.",
+      "ok": true
+    }
+  ]
+}
