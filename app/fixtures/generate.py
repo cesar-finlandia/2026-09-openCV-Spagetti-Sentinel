@@ -83,9 +83,10 @@ def render_clip(spec: FixtureSpec, path: str) -> dict:
                 jitter = int(rng.normal(0, 0.6))
                 x1 = 180 + jitter
                 x2 = 1100 + jitter
-                # Spaghetti blanks out infill rows.
+                # Spaghetti blanks out infill rows (the overlay below repaints
+                # them dark; skip drawing them here too).
                 if spec["id"] == "spaghetti" and i >= 150:
-                    kill = min(18, (i - 150) // 6)
+                    kill = min(22, (i - 150) // 3)
                     if r >= 26 - kill - 1:
                         continue
                 cv2.line(frame, (x1, y), (x2, y), (178, 150, 96), 6)
@@ -101,18 +102,32 @@ def render_clip(spec: FixtureSpec, path: str) -> dict:
                     ey = int(py + ln * math.sin(ang))
                     cv2.line(frame, (px, py), (ex, ey), (198, 178, 130), 1)
             elif fid == "spaghetti" and i >= 150:
-                n = min(90, (i - 150))
+                # Dark gouges: paint bed-dark rectangles over infill rows so
+                # first_layer_coverage collapses (drives the coverage term).
+                kill_rows = min(22, (i - 150) // 3)
+                for kr in range(kill_rows):
+                    yk = 110 + (26 - kr - 1) * 20
+                    if 100 <= yk <= 615:
+                        cv2.rectangle(frame, (175, yk - 9), (1105, yk + 9), (38, 38, 40), -1)
+                n = min(220, 4 * (i - 150))
                 for _ in range(n):
                     px = int(rng.integers(180, 1100))
                     py = int(rng.integers(110, 610))
                     pts = [(px, py)]
                     cx, cy = px, py
-                    for _k in range(4):
-                        cx += int(rng.integers(-18, 19))
-                        cy += int(rng.integers(-18, 19))
+                    for _k in range(5):
+                        cx += int(rng.integers(-30, 31))
+                        cy += int(rng.integers(-30, 31))
                         pts.append((cx, cy))
                     arr = np.array(pts, dtype=np.int32).reshape((-1, 1, 2))
-                    cv2.polylines(frame, [arr], False, (205, 186, 140), 3)
+                    cv2.polylines(frame, [arr], False, (215, 196, 150), 4)
+                # Extra bright blobs that appear/disappear frame to frame,
+                # driving motion_energy and texture_disorder hard.
+                nb = min(60, (i - 150))
+                for _ in range(nb):
+                    bx = int(rng.integers(180, 1080))
+                    by = int(rng.integers(110, 590))
+                    cv2.circle(frame, (bx, by), int(rng.integers(6, 24)), (225, 205, 160), -1)
             elif fid == "lighting-shift":
                 factor = 1.0 + 0.35 * math.sin(2 * math.pi * i / 150.0)
                 frame = np.clip(frame.astype(np.float32) * factor, 0, 255).astype(np.uint8)

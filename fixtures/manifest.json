@@ -1,7 +1,7 @@
 {
   "synthetic": true,
   "generator": "app/fixtures/generate.py",
-  "generated_at": "2026-09-11T10:57:56Z",
+  "generated_at": "2026-09-11T11:10:18Z",
   "width": 1280,
   "height": 720,
   "fps": 30.0,
@@ -36,7 +36,7 @@
       "onset_frame": 150,
       "frames": 300,
       "seed": 303,
-      "sha256": "cefe383251983fdbf6b74e5d4b16316c28cae6fe5907f6faac363de58b65e18d",
+      "sha256": "95c20105e628fac8b27fa86c9243aaa146114b0b10351cc6ddb80abf3947f1da",
       "notes": "Extruded filament detaches from frame 150 and accumulates. Expect a pause request.",
       "ok": true
     },
