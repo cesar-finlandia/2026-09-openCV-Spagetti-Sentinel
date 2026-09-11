@@ -167,6 +167,10 @@ async def run_agent(cfg: RunConfig, emit: EmitFn, approver: ApproverFn) -> RunSu
                             "bytes": ev.get("bytes", 0), "backend": ev.get("backend", "local")},
                            bool(ev.get("degraded")))
                 approval_id = uuid4().hex
+                try:
+                    decision["_approval_id"] = approval_id
+                except Exception:
+                    pass
                 record = {"approval_id": approval_id, "run_id": cfg["run_id"],
                           "frame_index": idx, "approved": None,
                           "created_at": _utcnow_iso(), "resolved_at": None}
@@ -182,6 +186,10 @@ async def run_agent(cfg: RunConfig, emit: EmitFn, approver: ApproverFn) -> RunSu
                     approved = False
                 record["approved"] = bool(approved)
                 record["resolved_at"] = _utcnow_iso()
+                try:
+                    del decision["_approval_id"]
+                except Exception:
+                    pass
                 await emit(STEP_APPROVAL_RESOLVED, "done",
                            {"approval_id": approval_id, "approved": bool(approved),
                             "resolved_by": "human", "t_ms": t_ms}, False)
@@ -238,6 +246,10 @@ async def run_agent(cfg: RunConfig, emit: EmitFn, approver: ApproverFn) -> RunSu
                                bool(ev.get("degraded")))
                     if decision["action"] == "request_pause_approval":
                         approval_id = uuid4().hex
+                        try:
+                            decision["_approval_id"] = approval_id
+                        except Exception:
+                            pass
                         record = {"approval_id": approval_id, "run_id": cfg["run_id"],
                                   "frame_index": int(scores["frame_index"]), "approved": None,
                                   "created_at": _utcnow_iso(), "resolved_at": None}
@@ -251,6 +263,10 @@ async def run_agent(cfg: RunConfig, emit: EmitFn, approver: ApproverFn) -> RunSu
                             approved = False
                         record["approved"] = bool(approved)
                         record["resolved_at"] = _utcnow_iso()
+                        try:
+                            del decision["_approval_id"]
+                        except Exception:
+                            pass
                         await emit(STEP_APPROVAL_RESOLVED, "done",
                                    {"approval_id": approval_id, "approved": bool(approved),
                                     "resolved_by": "human", "t_ms": int(scores["t_ms"])}, False)
