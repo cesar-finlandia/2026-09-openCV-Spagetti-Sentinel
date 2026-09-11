@@ -1,0 +1,192 @@
+{
+  "manifest_version": "1.0.0",
+  "created_at": "2026-09-11T09:09:11.617Z",
+  "chassis_version": "0edd8df1b205832d801b095e1fcec7259ad646eb",
+  "components": [
+    {
+      "id": "resilience",
+      "included": true,
+      "version": "1.0.0",
+      "requires_env": [],
+      "requires_providers": []
+    },
+    {
+      "id": "platform",
+      "included": true,
+      "version": "1.0.0",
+      "requires_env": [
+        "VERCEL_TOKEN",
+        "VERCEL_PROJECT_ID"
+      ],
+      "requires_providers": [
+        "vercel"
+      ]
+    },
+    {
+      "id": "media",
+      "included": true,
+      "version": "1.0.0",
+      "requires_env": [
+        "OPENAI_API_KEY"
+      ],
+      "requires_providers": [
+        "openai",
+        "replicate",
+        "elevenlabs"
+      ]
+    },
+    {
+      "id": "ideation",
+      "included": true,
+      "version": "1.0.0",
+      "requires_env": [
+        "OPENAI_API_KEY"
+      ],
+      "requires_providers": [
+        "openai",
+        "playwright"
+      ]
+    },
+    {
+      "id": "context",
+      "included": true,
+      "version": "1.0.0",
+      "requires_env": [],
+      "requires_providers": []
+    },
+    {
+      "id": "dev-tooling",
+      "included": true,
+      "version": "1.0.0",
+      "requires_env": [],
+      "requires_providers": []
+    },
+    {
+      "id": "assembly-advisory",
+      "included": false,
+      "version": "1.0.0",
+      "requires_env": [
+        "OPENAI_API_KEY",
+        "ANTHROPIC_API_KEY"
+      ],
+      "requires_providers": [
+        "openai",
+        "anthropic"
+      ]
+    },
+    {
+      "id": "data",
+      "included": true,
+      "version": "1.0.0",
+      "requires_env": [
+        "OPENAI_API_KEY"
+      ],
+      "requires_providers": [
+        "openai"
+      ]
+    },
+    {
+      "id": "cost",
+      "included": true,
+      "version": "1.0.0",
+      "requires_env": [],
+      "requires_providers": []
+    },
+    {
+      "id": "provenance",
+      "included": true,
+      "version": "1.0.0",
+      "requires_env": [],
+      "requires_providers": []
+    },
+    {
+      "id": "pgm",
+      "included": false,
+      "version": "1.0.0",
+      "requires_env": [
+        "OPENAI_API_KEY"
+      ],
+      "requires_providers": [
+        "openai",
+        "reddit"
+      ]
+    },
+    {
+      "id": "profile",
+      "included": false,
+      "version": "1.0.0",
+      "requires_env": [
+        "OPENAI_API_KEY"
+      ],
+      "requires_providers": [
+        "openai"
+      ]
+    }
+  ],
+  "selection_rationale": [
+    {
+      "id": "resilience",
+      "decision": "include",
+      "reason": "Ensures \"Provide judges with a working application\" via golden cache and degraded replay when live video/AWS fails."
+    },
+    {
+      "id": "platform",
+      "decision": "include",
+      "reason": "Delivers \"A judge-accessible web endpoint is preferred\" via DEP deploy plus TRN streaming and UI for judge URL walk-through."
+    },
+    {
+      "id": "media",
+      "decision": "include",
+      "reason": "Implements \"use OpenCV 5 for substantive image or video analysis\" via media/vision frame differencing and texture pipeline."
+    },
+    {
+      "id": "ideation",
+      "decision": "include",
+      "reason": "Generates \"Video ≤ 5 minutes, public or unlisted, judge-accessible\" via deckgen/script/faqdef/demodrive for pitch and demo capture."
+    },
+    {
+      "id": "context",
+      "decision": "include",
+      "reason": "Buffers \"agent uses OpenCV 5 tools within a multi-step perception-decision-action loop\" for Agentic Vision secondary track."
+    },
+    {
+      "id": "dev-tooling",
+      "decision": "include",
+      "reason": "Provides \"Report reproducible measurements such as latency, throughput, utilization, cost\" via eval/bench for COOL baseline proof."
+    },
+    {
+      "id": "assembly-advisory",
+      "decision": "exclude",
+      "reason": "Exclude; accept risk of slower build iteration, but no Overall or COOL/Agentic rubric requires ASM/ADV in delivered app."
+    },
+    {
+      "id": "data",
+      "decision": "include",
+      "reason": "Seeds \"wins User experience via one-URL judge endpoint plus offline replay\" via synthetic watermarked frames for offline judge demo."
+    },
+    {
+      "id": "cost",
+      "decision": "include",
+      "reason": "Guards \"cloud compute grant valued at $150\" plus Free Tier credits with metering and budget warnings to prevent credit burn."
+    },
+    {
+      "id": "provenance",
+      "decision": "include",
+      "reason": "Formats \"Technical report (problem, users, architecture, OpenCV 5 implementation\" via prov disclosure plus submit formatter for gate."
+    },
+    {
+      "id": "pgm",
+      "decision": "exclude",
+      "reason": "pgm is pre-assembly market research only, never part of the delivered app (NONGOAL-12)."
+    },
+    {
+      "id": "profile",
+      "decision": "exclude",
+      "reason": "Exclude (ASM-AC-01 verified): src/profile/roles.ts hard-imports excluded pgm, so including profile fails the post-assembly verify; no included component imports profile (only .tmp_emit junk, never copied). Already extracted pre-assembly; event_profile.json ships via design_documents handoff."
+    }
+  ],
+  "git": {
+    "initialized": true,
+    "baseline_commit": "e43fbcaa0e671246a97d756ac1b5abeb4a94d5ca"
+  }
+}
