@@ -1,0 +1,15 @@
+{
+  "$comment": "Mirror of app/contracts/steps.py ALL_STEPS. DP-UI imports this file; nothing else writes it.",
+  "steps": [
+    "run-start",
+    "ingest",
+    "perceive",
+    "decide",
+    "act",
+    "await-approval",
+    "approval-resolved",
+    "evidence-stored",
+    "rationale",
+    "run-summary"
+  ]
+}

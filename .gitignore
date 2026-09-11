@@ -48,3 +48,8 @@ handout_active.md
 /demo/
 /deck/
 script.md
+.venv/
+.evidence/
+.golden-cache/
+__pycache__/
+*.pyc

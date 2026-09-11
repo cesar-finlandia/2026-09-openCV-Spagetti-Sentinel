@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://spaghetti-sentinel/contracts/vision-scores.schema.json",
+  "title": "VisionScores",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["frame_index", "t_ms", "first_layer_coverage", "edge_regularity", "motion_energy",
+               "texture_disorder", "spaghetti_score", "confidence", "roi", "backend", "ops_ms", "degraded"],
+  "properties": {
+    "frame_index": { "type": "integer", "minimum": 0 },
+    "t_ms": { "type": "integer", "minimum": 0 },
+    "first_layer_coverage": { "type": "number", "minimum": 0, "maximum": 1 },
+    "edge_regularity": { "type": "number", "minimum": 0, "maximum": 1 },
+    "motion_energy": { "type": "number", "minimum": 0, "maximum": 1 },
+    "texture_disorder": { "type": "number", "minimum": 0, "maximum": 1 },
+    "spaghetti_score": { "type": "number", "minimum": 0, "maximum": 1 },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "roi": { "type": "array", "items": { "type": "integer" }, "minItems": 4, "maxItems": 4 },
+    "backend": { "enum": ["cool", "baseline"] },
+    "ops_ms": { "type": "object", "additionalProperties": { "type": "number" } },
+    "degraded": { "type": "boolean" }
+  }
+}

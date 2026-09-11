@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://spaghetti-sentinel/contracts/agent-decision.schema.json",
+  "title": "AgentDecision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["frame_index", "t_ms", "action", "reason_code", "spaghetti_score", "confidence",
+               "threshold", "requires_human", "rationale", "checklist", "evidence_uri",
+               "rationale_source", "degraded"],
+  "properties": {
+    "frame_index": { "type": "integer", "minimum": 0 },
+    "t_ms": { "type": "integer", "minimum": 0 },
+    "action": { "enum": ["continue", "nudge_parameters", "capture_evidence", "request_pause_approval"] },
+    "reason_code": { "type": "string", "minLength": 1 },
+    "spaghetti_score": { "type": "number", "minimum": 0, "maximum": 1 },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "threshold": { "type": "number", "minimum": 0, "maximum": 1 },
+    "requires_human": { "type": "boolean" },
+    "rationale": { "type": "string" },
+    "checklist": { "type": "array", "items": { "type": "string" } },
+    "evidence_uri": { "type": ["string", "null"] },
+    "rationale_source": { "enum": ["bedrock", "fallback"] },
+    "degraded": { "type": "boolean" }
+  }
+}

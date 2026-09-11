@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://spaghetti-sentinel/contracts/run-summary.schema.json",
+  "title": "RunSummary",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "backend", "frames_processed", "frames_sampled", "wall_ms", "fps",
+               "p50_frame_ms", "p95_frame_ms", "decisions", "first_alert_frame", "first_alert_t_ms",
+               "pause_recommended", "approvals", "evidence_uris", "degraded", "synthetic", "build_marker"],
+  "properties": {
+    "run_id": { "type": "string", "minLength": 1 },
+    "backend": { "enum": ["cool", "baseline"] },
+    "frames_processed": { "type": "integer", "minimum": 0 },
+    "frames_sampled": { "type": "integer", "minimum": 0 },
+    "wall_ms": { "type": "integer", "minimum": 0 },
+    "fps": { "type": "number", "minimum": 0 },
+    "p50_frame_ms": { "type": "number", "minimum": 0 },
+    "p95_frame_ms": { "type": "number", "minimum": 0 },
+    "decisions": { "type": "array", "items": { "type": "object" } },
+    "first_alert_frame": { "type": ["integer", "null"] },
+    "first_alert_t_ms": { "type": ["integer", "null"] },
+    "pause_recommended": { "type": "boolean" },
+    "approvals": { "type": "array", "items": { "type": "object" } },
+    "evidence_uris": { "type": "array", "items": { "type": "string" } },
+    "degraded": { "type": "boolean" },
+    "synthetic": { "type": "boolean" },
+    "build_marker": { "type": "string" }
+  }
+}
