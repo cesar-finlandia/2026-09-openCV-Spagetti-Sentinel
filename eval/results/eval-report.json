@@ -1,0 +1,339 @@
+{
+  "schema": "spaghetti-sentinel-eval-report/1.0.0",
+  "generated_at": "2026-09-11T14:36:56Z",
+  "environment": {
+    "backend": "cool",
+    "opencv_version": "5.0.0",
+    "cool_version": null,
+    "arch": "AMD64",
+    "rationale_source_observed": [
+      "fallback"
+    ],
+    "evidence_backend": "local",
+    "synthetic_cases": 4,
+    "real_cases": 0
+  },
+  "axes": {
+    "task_effectiveness": {
+      "passed": 4,
+      "total": 4,
+      "score": 1.0
+    },
+    "failure_handling": {
+      "passed": 3,
+      "total": 3,
+      "score": 1.0
+    },
+    "observability": {
+      "passed": 4,
+      "total": 4,
+      "score": 1.0
+    },
+    "human_control": {
+      "passed": 1,
+      "total": 1,
+      "score": 1.0
+    }
+  },
+  "cases": [
+    {
+      "id": "nominal-no-pause",
+      "kind": "synthetic",
+      "axis": "task_effectiveness",
+      "passed": true,
+      "skipped": false,
+      "observed": {
+        "pause_recommended": false,
+        "requires_human": false,
+        "first_alert_frame": null,
+        "detect_latency_frames": null,
+        "detect_latency_s": null,
+        "actions": {
+          "continue": 100
+        },
+        "approvals": 0,
+        "approval_unanswered": false,
+        "evidence_uris": 0,
+        "trace_steps": 300,
+        "degraded": false,
+        "completes": true
+      },
+      "expected": {
+        "pause_recommended": false,
+        "max_action": "continue"
+      },
+      "failure_reason": null,
+      "asks": "A clean print must never interrupt the operator."
+    },
+    {
+      "id": "warning-captures-not-pauses",
+      "kind": "synthetic",
+      "axis": "task_effectiveness",
+      "passed": true,
+      "skipped": false,
+      "observed": {
+        "pause_recommended": false,
+        "requires_human": false,
+        "first_alert_frame": 147,
+        "detect_latency_frames": 27,
+        "detect_latency_s": 0.9,
+        "actions": {
+          "continue": 49,
+          "nudge_parameters": 4,
+          "capture_evidence": 47
+        },
+        "approvals": 0,
+        "approval_unanswered": false,
+        "evidence_uris": 47,
+        "trace_steps": 300,
+        "degraded": false,
+        "completes": true
+      },
+      "expected": {
+        "pause_recommended": false,
+        "min_action": "capture_evidence",
+        "onset_frame": 120,
+        "max_detect_latency_frames": 45
+      },
+      "failure_reason": null,
+      "asks": "A cosmetic defect should be recorded, not escalated to a human."
+    },
+    {
+      "id": "failure-pauses-and-asks",
+      "kind": "synthetic",
+      "axis": "task_effectiveness",
+      "passed": true,
+      "skipped": false,
+      "observed": {
+        "pause_recommended": true,
+        "requires_human": true,
+        "first_alert_frame": 168,
+        "detect_latency_frames": 18,
+        "detect_latency_s": 0.6,
+        "actions": {
+          "continue": 56,
+          "nudge_parameters": 1,
+          "capture_evidence": 8,
+          "request_pause_approval": 35
+        },
+        "approvals": 35,
+        "approval_unanswered": false,
+        "evidence_uris": 43,
+        "trace_steps": 300,
+        "degraded": false,
+        "completes": true
+      },
+      "expected": {
+        "pause_recommended": true,
+        "requires_human": true,
+        "onset_frame": 150,
+        "max_detect_latency_frames": 45
+      },
+      "failure_reason": null,
+      "asks": "A real failure must reach a human, with evidence, quickly."
+    },
+    {
+      "id": "lighting-negative",
+      "kind": "synthetic",
+      "axis": "task_effectiveness",
+      "passed": true,
+      "skipped": false,
+      "observed": {
+        "pause_recommended": false,
+        "requires_human": false,
+        "first_alert_frame": 102,
+        "detect_latency_frames": null,
+        "detect_latency_s": null,
+        "actions": {
+          "continue": 92,
+          "capture_evidence": 8
+        },
+        "approvals": 0,
+        "approval_unanswered": false,
+        "evidence_uris": 8,
+        "trace_steps": 300,
+        "degraded": false,
+        "completes": true
+      },
+      "expected": {
+        "pause_recommended": false,
+        "max_action": "capture_evidence"
+      },
+      "failure_reason": null,
+      "asks": "A global lighting change must not be mistaken for a failure."
+    },
+    {
+      "id": "degraded-frames-never-escalate",
+      "kind": "fault-injection",
+      "axis": "failure_handling",
+      "passed": true,
+      "skipped": false,
+      "observed": {
+        "pause_recommended": false,
+        "requires_human": false,
+        "first_alert_frame": null,
+        "detect_latency_frames": null,
+        "detect_latency_s": null,
+        "actions": {
+          "continue": 100
+        },
+        "approvals": 0,
+        "approval_unanswered": false,
+        "evidence_uris": 0,
+        "trace_steps": 300,
+        "degraded": true,
+        "completes": true
+      },
+      "expected": {
+        "pause_recommended": false,
+        "completes": true
+      },
+      "failure_reason": null,
+      "asks": "When the vision pipeline cannot measure, the system must fall silent, not guess."
+    },
+    {
+      "id": "vision-source-dies-midrun",
+      "kind": "fault-injection",
+      "axis": "failure_handling",
+      "passed": true,
+      "skipped": false,
+      "observed": {
+        "pause_recommended": true,
+        "requires_human": true,
+        "first_alert_frame": 168,
+        "detect_latency_frames": null,
+        "detect_latency_s": null,
+        "actions": {
+          "continue": 55,
+          "nudge_parameters": 1,
+          "capture_evidence": 8,
+          "request_pause_approval": 35
+        },
+        "approvals": 35,
+        "approval_unanswered": false,
+        "evidence_uris": 43,
+        "trace_steps": 298,
+        "degraded": true,
+        "completes": true
+      },
+      "expected": {
+        "completes": true,
+        "degraded": true
+      },
+      "failure_reason": null,
+      "asks": "A crash in the analysis must not take the run down."
+    },
+    {
+      "id": "evidence-store-unavailable",
+      "kind": "fault-injection",
+      "axis": "failure_handling",
+      "passed": true,
+      "skipped": false,
+      "observed": {
+        "pause_recommended": true,
+        "requires_human": true,
+        "first_alert_frame": 168,
+        "detect_latency_frames": null,
+        "detect_latency_s": null,
+        "actions": {
+          "continue": 56,
+          "nudge_parameters": 1,
+          "capture_evidence": 8,
+          "request_pause_approval": 35
+        },
+        "approvals": 35,
+        "approval_unanswered": false,
+        "evidence_uris": 0,
+        "trace_steps": 300,
+        "degraded": false,
+        "completes": true
+      },
+      "expected": {
+        "completes": true,
+        "pause_recommended": true,
+        "evidence_uris": 0
+      },
+      "failure_reason": null,
+      "asks": "Losing the evidence vault must not lose the alert."
+    },
+    {
+      "id": "nobody-answers-the-prompt",
+      "kind": "fault-injection",
+      "axis": "human_control",
+      "passed": true,
+      "skipped": false,
+      "observed": {
+        "pause_recommended": true,
+        "requires_human": true,
+        "first_alert_frame": 168,
+        "detect_latency_frames": null,
+        "detect_latency_s": null,
+        "actions": {
+          "continue": 56,
+          "nudge_parameters": 1,
+          "capture_evidence": 8,
+          "request_pause_approval": 35
+        },
+        "approvals": 35,
+        "approval_unanswered": true,
+        "evidence_uris": 43,
+        "trace_steps": 300,
+        "degraded": false,
+        "completes": true
+      },
+      "expected": {
+        "completes": true,
+        "approval_unanswered": true
+      },
+      "failure_reason": null,
+      "asks": "An unanswered human prompt must be recorded as unanswered, and the run must end cleanly."
+    },
+    {
+      "id": "threshold-flip-changes-action",
+      "kind": "property",
+      "axis": "observability",
+      "passed": true,
+      "skipped": false,
+      "observed": {
+        "action_changes_at_threshold": true,
+        "action_below": "capture_evidence",
+        "action_above": "request_pause_approval",
+        "delta_in_score": 0.02
+      },
+      "expected": {
+        "action_changes_at_threshold": true
+      },
+      "failure_reason": null,
+      "asks": "The qualifying property: vision output changes what the system does next."
+    },
+    {
+      "id": "real-footage",
+      "kind": "real",
+      "axis": "task_effectiveness",
+      "passed": false,
+      "skipped": true,
+      "observed": {},
+      "expected": {
+        "completes": true
+      },
+      "failure_reason": "no real footage present",
+      "asks": "Does any of this survive contact with non-synthetic footage?"
+    }
+  ],
+  "failure_cases": [],
+  "limitations": [
+    "Three of the four labelled clips are synthetic and were generated by this repository; they exercise the pipeline's discrimination, not real-world lighting, camera noise or printer variety.",
+    "The scoring weights in app/vision/pipeline.py are fixed constants chosen by inspection, not learned from a labelled dataset; they are a heuristic, not a trained model.",
+    "Detection latency is measured in sampled frames at sample_every_n=3, so the reported latency is granular to 3 source frames (0.1 s at 30 fps).",
+    "The system recommends a pause; it never actuates one. Any claim of saved filament is modelled from the detection frame, not measured on a printer.",
+    "Confidence is a deterministic penalty product, not a calibrated probability; it should not be read as 'this many percent of such alerts are real'.",
+    "No adversarial or occlusion cases are evaluated (a hand entering frame, the camera moving mid-print beyond the stabiliser's \u00b124 px clamp)."
+  ],
+  "commit": "56857b1",
+  "observability_checks": {
+    "traceable": true,
+    "tools_recorded": true,
+    "validates": true,
+    "tools_known": true
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "spaghetti-sentinel-eval/1.0.0",
+  "cases": [
+    {
+      "id": "nominal-no-pause",
+      "clip": "good-first-layer",
+      "kind": "synthetic",
+      "expect": { "pause_recommended": false, "max_action": "continue" },
+      "asks": "A clean print must never interrupt the operator."
+    },
+    {
+      "id": "warning-captures-not-pauses",
+      "clip": "stringing",
+      "kind": "synthetic",
+      "expect": { "pause_recommended": false, "min_action": "capture_evidence",
+                  "onset_frame": 120, "max_detect_latency_frames": 45 },
+      "asks": "A cosmetic defect should be recorded, not escalated to a human."
+    },
+    {
+      "id": "failure-pauses-and-asks",
+      "clip": "spaghetti",
+      "kind": "synthetic",
+      "expect": { "pause_recommended": true, "requires_human": true,
+                  "onset_frame": 150, "max_detect_latency_frames": 45 },
+      "asks": "A real failure must reach a human, with evidence, quickly."
+    },
+    {
+      "id": "lighting-negative",
+      "clip": "lighting-shift",
+      "kind": "synthetic",
+      "expect": { "pause_recommended": false, "max_action": "capture_evidence" },
+      "asks": "A global lighting change must not be mistaken for a failure."
+    },
+    {
+      "id": "degraded-frames-never-escalate",
+      "clip": "spaghetti",
+      "kind": "fault-injection",
+      "inject": "degrade_every_frame",
+      "expect": { "pause_recommended": false, "completes": true },
+      "asks": "When the vision pipeline cannot measure, the system must fall silent, not guess."
+    },
+    {
+      "id": "vision-source-dies-midrun",
+      "clip": "spaghetti",
+      "kind": "fault-injection",
+      "inject": "raise_at_frame_30",
+      "expect": { "completes": true, "degraded": true },
+      "asks": "A crash in the analysis must not take the run down."
+    },
+    {
+      "id": "evidence-store-unavailable",
+      "clip": "spaghetti",
+      "kind": "fault-injection",
+      "inject": "evidence_write_fails",
+      "expect": { "completes": true, "pause_recommended": true, "evidence_uris": 0 },
+      "asks": "Losing the evidence vault must not lose the alert."
+    },
+    {
+      "id": "nobody-answers-the-prompt",
+      "clip": "spaghetti",
+      "kind": "fault-injection",
+      "inject": "approver_never_answers",
+      "expect": { "completes": true, "approval_unanswered": true },
+      "asks": "An unanswered human prompt must be recorded as unanswered, and the run must end cleanly."
+    },
+    {
+      "id": "threshold-flip-changes-action",
+      "clip": "spaghetti",
+      "kind": "property",
+      "expect": { "action_changes_at_threshold": true },
+      "asks": "The qualifying property: vision output changes what the system does next."
+    },
+    {
+      "id": "real-footage",
+      "clip": "__fixtures_real__",
+      "kind": "real",
+      "expect": { "completes": true },
+      "asks": "Does any of this survive contact with non-synthetic footage?",
+      "skip_if_missing": true
+    }
+  ]
+}

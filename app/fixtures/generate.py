@@ -92,15 +92,20 @@ def render_clip(spec: FixtureSpec, path: str) -> dict:
                 cv2.line(frame, (x1, y), (x2, y), (178, 150, 96), 6)
             fid = spec["id"]
             if fid == "stringing" and i >= 120:
-                n = min(40, (i - 120) // 3)
+                n = min(320, 6 * (i - 120))
                 for _ in range(n):
                     px = int(rng.integers(180, 1100))
                     py = int(rng.integers(110, 610))
                     ang = float(rng.uniform(0, 2 * math.pi))
-                    ln = int(rng.integers(8, 26))
+                    ln = int(rng.integers(15, 50))
                     ex = int(px + ln * math.cos(ang))
                     ey = int(py + ln * math.sin(ang))
-                    cv2.line(frame, (px, py), (ex, ey), (198, 178, 130), 1)
+                    cv2.line(frame, (px, py), (ex, ey), (215, 195, 145), 3)
+                nd = min(100, (i - 120))
+                for _ in range(nd):
+                    dx = int(rng.integers(180, 1100))
+                    dy = int(rng.integers(110, 610))
+                    cv2.circle(frame, (dx, dy), int(rng.integers(2, 5)), (215, 195, 145), -1)
             elif fid == "spaghetti" and i >= 150:
                 # Dark gouges: paint bed-dark rectangles over infill rows so
                 # first_layer_coverage collapses (drives the coverage term).

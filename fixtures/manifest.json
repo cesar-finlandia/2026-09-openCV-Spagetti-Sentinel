@@ -1,7 +1,7 @@
 {
   "synthetic": true,
   "generator": "app/fixtures/generate.py",
-  "generated_at": "2026-09-11T11:10:18Z",
+  "generated_at": "2026-09-11T14:28:45Z",
   "width": 1280,
   "height": 720,
   "fps": 30.0,
@@ -25,7 +25,7 @@
       "onset_frame": 120,
       "frames": 300,
       "seed": 202,
-      "sha256": "b22705a8035c84fa95784c3e124c8b85f9a7332f0224a9558594d727f4c90d20",
+      "sha256": "9c887af4cb1b59f47b986c1a94586e7508ee6bb7deef2f2ce47b68be67aac53b",
       "notes": "Thin wisps appear from frame 120. Expect capture_evidence, not a pause.",
       "ok": true
     },
