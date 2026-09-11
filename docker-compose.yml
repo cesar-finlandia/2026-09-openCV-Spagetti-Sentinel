@@ -1,0 +1,9 @@
+services:
+  app:
+    image: spaghetti-sentinel:local
+    build: { context: ., args: { BUILD_MARKER: local } }
+    ports: ["8000:8000"]
+    environment:
+      SS_REPLAY: "1"
+      SS_BACKEND: baseline
+      BUILD_MARKER: local

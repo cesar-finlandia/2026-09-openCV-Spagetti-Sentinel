@@ -1,0 +1,16 @@
+.git
+.venv
+__pycache__
+*.pyc
+.env
+.evidence
+.golden-cache
+node_modules
+web/node_modules
+web/dist
+web/.smoke
+design_documents
+docs
+bench/results
+eval/results
+deploy/deployment-record.json
