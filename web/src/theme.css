@@ -1,0 +1,70 @@
+:root {
+  --ss-paper:      #f6f1e7;
+  --ss-ink:        #1e1b16;
+  --ss-muted:      #6f675a;
+  --ss-line:       #ddd3c2;
+  --ss-verdigris:  #2f7d72;
+  --ss-amber:      #c8791f;
+  --ss-degraded:   #8d8477;
+  --ss-surface:    #fffdf8;
+}
+
+body {
+  background: var(--ss-paper);
+  color: var(--ss-ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  margin: 0;
+}
+
+.ss-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.ss-card {
+  background: var(--ss-surface);
+  border: 1px solid var(--ss-line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 12px 0;
+}
+
+.ss-muted { color: var(--ss-muted); }
+.ss-chip {
+  display: inline-block;
+  border: 1px solid var(--ss-line);
+  border-radius: 999px;
+  padding: 1px 10px;
+  font-size: 12px;
+  font-family: monospace;
+}
+.ss-chip--cool { color: var(--ss-verdigris); border-color: var(--ss-verdigris); }
+.ss-chip--base { color: var(--ss-muted); }
+.ss-trace { font-size: 14px; border-collapse: collapse; width: 100%; }
+.ss-trace th, .ss-trace td {
+  border-bottom: 1px solid var(--ss-line);
+  padding: 4px 8px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.ss-trace th:first-child, .ss-trace td:first-child { text-align: left; }
+tr.ss-alert { background: #fdf3e3; }
+.ss-approval {
+  border: 2px solid var(--ss-amber);
+  border-radius: 8px;
+  padding: 14px;
+  margin: 12px 0;
+  background: var(--ss-surface);
+}
+.ss-btn {
+  border: 1px solid var(--ss-line);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  background: var(--ss-surface);
+}
+.ss-btn--primary { background: var(--ss-amber); border-color: var(--ss-amber); color: #fff; }
+.ss-btn:disabled { opacity: 0.5; cursor: default; }
+.ss-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }

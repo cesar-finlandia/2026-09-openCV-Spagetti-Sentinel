@@ -69,7 +69,11 @@ class RunRegistry:
             mf = settings.max_frames
         sen = max(1, min(30, sen))
         mf = max(1, min(5000, mf))
-        run_id = uuid4().hex[:12]
+        # Full hyphenated UUID (not hex[:12]): the chassis EventEnvelope schema
+        # declares trace_id as format uuid, and the browser validates with ajv
+        # (which enforces formats, unlike Python jsonschema's default). Since
+        # trace_id == run_id (blueprint §2.1), the run id itself must be a uuid.
+        run_id = str(uuid4())
         try:
             fx = settings.fixtures_dir
         except Exception:

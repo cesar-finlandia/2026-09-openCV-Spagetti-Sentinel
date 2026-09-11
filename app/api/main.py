@@ -251,8 +251,11 @@ def api_events(trace_id: str | None = None) -> JSONResponse:
 
     pub = get_publisher(trace_id)
     if pub is None:
-        return JSONResponse({"trace_id": trace_id, "events": [], "degraded": False})
-    return JSONResponse(pub.collect())
+        return JSONResponse({"status": "complete", "trace_id": trace_id,
+                             "events": [], "degraded": False})
+    # "status": "complete" is the chassis FallbackSnapshot shape (TRN-RES-03):
+    # the browser's parseSnapshot requires it before accepting the snapshot.
+    return JSONResponse({"status": "complete", **pub.collect()})
 
 
 @app.get("/api/evidence/{key:path}")

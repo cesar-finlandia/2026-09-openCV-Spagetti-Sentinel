@@ -53,3 +53,11 @@ script.md
 .golden-cache/
 __pycache__/
 *.pyc
+
+# DP-UI build + smoke artefacts
+web/node_modules/
+web/dist/
+web/.smoke/
+node_modules/
+dist/
+deploy/cool/*.whl
