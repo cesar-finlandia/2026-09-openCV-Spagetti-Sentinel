@@ -41,3 +41,10 @@ _run.log
 run_state.json
 handout.md
 handout_active.md
+
+/design_documents/
+/templates/
+/private/
+/demo/
+/deck/
+script.md
