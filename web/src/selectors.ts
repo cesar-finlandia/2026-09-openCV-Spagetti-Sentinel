@@ -1,6 +1,11 @@
 // Pure functions over EventEnvelope[]. No React, no fetch, no Date.now().
 // These are the ONLY place payload keys are read, so a blueprint §2.3 change
 // touches exactly one file.
+//
+// NOTE on the §5.1 cross-talk guard: these selectors are single-argument and
+// operate on the array they are given. App.tsx applies the guard once —
+// envelopes.filter((e) => !runId || e.trace_id === runId) — before calling
+// any selector, so every view-model below is already trace-scoped.
 import type { EventEnvelope } from "src/platform/transport";
 import { degradedResultOf, isDegradedEnvelope } from "src/platform/ui";
 import stepsJson from "../../app/contracts/steps.json";
@@ -45,6 +50,7 @@ export type RunHeader = {
   opencvVersion: string;
   coolVersion: string | null;
   synthetic: boolean;
+  totalFrames: number | null;
 } | null;
 
 export type TraceRow = {
@@ -57,7 +63,14 @@ export type TraceRow = {
   action: string;
   reasonCode: string;
   requiresHuman: boolean;
+  degraded: boolean;
 };
+
+/** What WorkIndicator says right now. */
+export type ActivityLine = { stepId: string; text: string; done: boolean };
+
+export const PAUSE_THRESHOLD_FALLBACK = 0.62;
+export const APPROVAL_TIMEOUT_S = 120;
 
 const LABELS: Record<string, string> = {
   "run-start": "Starting",
@@ -78,24 +91,18 @@ for (const id of (stepsJson as { steps: string[] }).steps) {
   }
 }
 
+/** step_id -> human label, passed to the chassis StepStatusIndicator's labelMap prop. */
 export const STEP_LABELS: Record<string, string> = LABELS;
-
-function inTrace(envelopes: EventEnvelope[], runId: string | null): EventEnvelope[] {
-  if (!runId) return envelopes;
-  return envelopes.filter((e) => !e.trace_id || e.trace_id === runId);
-}
 
 function isObj(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null;
 }
 
-export function selectRunHeader(
-  envelopes: EventEnvelope[],
-  runId: string | null = null,
-): RunHeader {
-  for (const e of inTrace(envelopes, runId)) {
+export function selectRunHeader(envelopes: EventEnvelope[]): RunHeader {
+  for (const e of envelopes) {
     if (e.step_id === "run-start") {
       const p = isObj(e.payload) ? e.payload : {};
+      const total = p["total_frames"];
       return {
         runId: String(p["run_id"] ?? ""),
         source: String(p["source"] ?? ""),
@@ -103,61 +110,45 @@ export function selectRunHeader(
         opencvVersion: String(p["opencv_version"] ?? ""),
         coolVersion: (p["cool_version"] as string | null) ?? null,
         synthetic: Boolean(p["synthetic"]),
+        totalFrames: typeof total === "number" ? total : null,
       };
     }
   }
   return null;
 }
 
-export function selectScores(
-  envelopes: EventEnvelope[],
-  runId: string | null = null,
-): VisionScores[] {
+export function selectScores(envelopes: EventEnvelope[]): VisionScores[] {
   const out: VisionScores[] = [];
-  for (const e of inTrace(envelopes, runId)) {
+  for (const e of envelopes) {
     if (e.step_id === "perceive" && e.status === "done" && isObj(e.payload)) {
       const s = e.payload["scores"];
-      if (isObj(s) && typeof s["frame_index"] === "number") {
-        out.push(s as unknown as VisionScores);
-      }
+      if (isObj(s)) out.push(s as unknown as VisionScores);
     }
   }
   out.sort((a, b) => a.frame_index - b.frame_index);
   return out;
 }
 
-export function selectDecisions(
-  envelopes: EventEnvelope[],
-  runId: string | null = null,
-): AgentDecision[] {
+export function selectDecisions(envelopes: EventEnvelope[]): AgentDecision[] {
   const out: AgentDecision[] = [];
-  for (const e of inTrace(envelopes, runId)) {
+  for (const e of envelopes) {
     if (e.step_id === "decide" && e.status === "done" && isObj(e.payload)) {
       const d = e.payload["decision"];
-      if (isObj(d) && typeof d["frame_index"] === "number") {
-        out.push(d as unknown as AgentDecision);
-      }
+      if (isObj(d)) out.push(d as unknown as AgentDecision);
     }
   }
   out.sort((a, b) => a.frame_index - b.frame_index);
   return out;
 }
 
-export function selectLatestDecision(
-  envelopes: EventEnvelope[],
-  runId: string | null = null,
-): AgentDecision | null {
-  const ds = selectDecisions(envelopes, runId);
+export function selectLatestDecision(envelopes: EventEnvelope[]): AgentDecision | null {
+  const ds = selectDecisions(envelopes);
   return ds.length ? ds[ds.length - 1]! : null;
 }
 
-export function selectPendingApproval(
-  envelopes: EventEnvelope[],
-  runId: string | null = null,
-): PendingApproval {
-  const scoped = inTrace(envelopes, runId);
-  for (let i = scoped.length - 1; i >= 0; i--) {
-    const e = scoped[i]!;
+export function selectPendingApproval(envelopes: EventEnvelope[]): PendingApproval {
+  for (let i = envelopes.length - 1; i >= 0; i--) {
+    const e = envelopes[i]!;
     if (e.step_id === "approval-resolved") return null;
     if (e.step_id === "await-approval" && isObj(e.payload)) {
       const d = e.payload["decision"];
@@ -172,27 +163,20 @@ export function selectPendingApproval(
   return null;
 }
 
-export function selectEvidenceUris(
-  envelopes: EventEnvelope[],
-  runId: string | null = null,
-): string[] {
+export function selectEvidenceUris(envelopes: EventEnvelope[]): string[] {
   const out: string[] = [];
-  for (const e of inTrace(envelopes, runId)) {
+  for (const e of envelopes) {
     if (e.step_id === "evidence-stored" && isObj(e.payload)) {
       const u = e.payload["uri"];
-      if (typeof u === "string" && u) out.push(u);
+      if (typeof u === "string" && u && !out.includes(u)) out.push(u);
     }
   }
   return out;
 }
 
-export function selectSummary(
-  envelopes: EventEnvelope[],
-  runId: string | null = null,
-): Record<string, unknown> | null {
-  const scoped = inTrace(envelopes, runId);
-  for (let i = scoped.length - 1; i >= 0; i--) {
-    const e = scoped[i]!;
+export function selectSummary(envelopes: EventEnvelope[]): Record<string, unknown> | null {
+  for (let i = envelopes.length - 1; i >= 0; i--) {
+    const e = envelopes[i]!;
     if (e.step_id === "run-summary" && isObj(e.payload) && isObj(e.payload["summary"])) {
       return e.payload["summary"] as Record<string, unknown>;
     }
@@ -200,14 +184,10 @@ export function selectSummary(
   return null;
 }
 
-export function selectTraceRows(
-  envelopes: EventEnvelope[],
-  runId: string | null = null,
-): TraceRow[] {
-  const scores = selectScores(envelopes, runId);
-  const decisions = selectDecisions(envelopes, runId);
+export function selectTraceRows(envelopes: EventEnvelope[]): TraceRow[] {
+  const scores = selectScores(envelopes);
   const byFrame = new Map<number, AgentDecision>();
-  for (const d of decisions) byFrame.set(d.frame_index, d);
+  for (const d of selectDecisions(envelopes)) byFrame.set(d.frame_index, d);
   const rows: TraceRow[] = [];
   let seq = 0;
   for (const s of scores) {
@@ -223,21 +203,65 @@ export function selectTraceRows(
       action: d.action,
       reasonCode: d.reason_code,
       requiresHuman: d.requires_human,
+      degraded: Boolean(s.degraded) || Boolean(d.degraded),
     });
   }
   return rows;
 }
 
-export function selectDegradedReasons(
-  envelopes: EventEnvelope[],
-  runId: string | null = null,
-): string[] {
+export function selectDegradedReasons(envelopes: EventEnvelope[]): string[] {
   const out: string[] = [];
-  for (const e of inTrace(envelopes, runId)) {
+  for (const e of envelopes) {
     if (isDegradedEnvelope(e)) {
       const r = degradedResultOf(e)?.reason || e.step_id;
       if (!out.includes(r)) out.push(r);
     }
   }
   return out;
+}
+
+export function selectActivityLine(envelopes: EventEnvelope[]): ActivityLine {
+  if (envelopes.length === 0) {
+    return {
+      stepId: "run-start",
+      text: "Starting the run — connecting to the live stream",
+      done: false,
+    };
+  }
+  let top = envelopes[0]!;
+  for (const e of envelopes) {
+    if ((e.sequence ?? 0) >= (top.sequence ?? 0)) top = e;
+  }
+  const p = isObj(top.payload) ? top.payload : {};
+  const header = selectRunHeader(envelopes);
+  switch (top.step_id) {
+    case "run-start":
+      return { stepId: top.step_id, text: "Starting the run — connecting to the live stream", done: false };
+    case "ingest": {
+      const frame = typeof p["frame_index"] === "number" ? p["frame_index"] : "?";
+      const total = header?.totalFrames ?? "?";
+      return { stepId: top.step_id, text: `Reading frames — frame ${frame} of ${total}`, done: false };
+    }
+    case "perceive": {
+      const s = isObj(p["scores"]) ? p["scores"] : {};
+      const frame = typeof s["frame_index"] === "number" ? s["frame_index"] : "?";
+      return { stepId: top.step_id, text: `OpenCV 5 analysis — frame ${frame}`, done: false };
+    }
+    case "decide":
+      return { stepId: top.step_id, text: "Deciding what to do", done: false };
+    case "act":
+      return { stepId: top.step_id, text: "Acting on the decision", done: false };
+    case "await-approval":
+      return { stepId: top.step_id, text: "Waiting for you to answer", done: false };
+    case "approval-resolved":
+      return { stepId: top.step_id, text: "You answered — carrying on", done: false };
+    case "evidence-stored":
+      return { stepId: top.step_id, text: "Saving evidence to S3", done: false };
+    case "rationale":
+      return { stepId: top.step_id, text: "Writing the explanation", done: false };
+    case "run-summary":
+      return { stepId: top.step_id, text: "Finished", done: top.status === "done" };
+    default:
+      return { stepId: top.step_id, text: "Starting the run — connecting to the live stream", done: false };
+  }
 }

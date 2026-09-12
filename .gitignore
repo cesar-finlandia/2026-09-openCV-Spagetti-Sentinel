@@ -42,7 +42,8 @@ run_state.json
 handout.md
 handout_active.md
 
-/design_documents/
+/design_documents/*
+!/design_documents/ui-screenshots/
 /templates/
 /private/
 /demo/

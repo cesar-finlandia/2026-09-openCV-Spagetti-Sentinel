@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, type JSX } from "react";
 import type { AgentDecision, VisionScores } from "../selectors";
 
 export type ConfidenceTimelineProps = {
@@ -8,71 +8,123 @@ export type ConfidenceTimelineProps = {
   height?: number;
 };
 
-export function ConfidenceTimeline(props: ConfidenceTimelineProps) {
-  const { scores, decisions, pauseThreshold, height = 160 } = props;
+const W = 1000;
+const PAD = 16;
+
+function pathFor(values: { x: number; y: number }[]): string {
+  return values.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+}
+
+export function ConfidenceTimeline({ scores, decisions, pauseThreshold, height = 200 }: ConfidenceTimelineProps): JSX.Element {
   const H = height;
-  const W = 1000;
-  const body = useMemo(() => {
+  const model = useMemo(() => {
     if (scores.length < 2) return null;
     const first = scores[0]!.frame_index;
     const last = scores[scores.length - 1]!.frame_index;
     const span = Math.max(1, last - first);
-    const x = (f: number) => ((f - first) / span) * (W - 60) + 30;
-    const y = (v: number) => H - 12 - Math.min(1, Math.max(0, v)) * (H - 24);
-    const conf = scores.map((s) => `${x(s.frame_index).toFixed(1)},${y(s.confidence).toFixed(1)}`).join(" ");
-    const spag = scores.map((s) => `${x(s.frame_index).toFixed(1)},${y(s.spaghetti_score).toFixed(1)}`).join(" ");
-    const alerts = decisions.filter((d) => d.action !== "continue");
-    const byFrame = new Map(scores.map((s) => [s.frame_index, s] as const));
-    return { conf, spag, alerts, byFrame, x, y };
-  }, [scores, decisions, H]);
+    const x = (f: number) => PAD + ((f - first) / span) * (W - PAD * 2);
+    const y = (v: number) => H - PAD - Math.min(1, Math.max(0, v)) * (H - PAD * 2);
+    const byFrame = new Map<number, AgentDecision>();
+    for (const d of decisions) byFrame.set(d.frame_index, d);
+    return {
+      x,
+      y,
+      conf: pathFor(scores.map((s) => ({ x: x(s.frame_index), y: y(s.confidence) }))),
+      spag: pathFor(scores.map((s) => ({ x: x(s.frame_index), y: y(s.spaghetti_score) }))),
+      thresholdY: y(pauseThreshold),
+      markers: decisions
+        .filter((d) => d.action !== "continue")
+        .map((d) => {
+          const s = scores.find((v) => v.frame_index === d.frame_index);
+          return { d, cx: x(d.frame_index), cy: y(s ? s.spaghetti_score : d.spaghetti_score) };
+        }),
+      degraded: scores.filter((s) => s.degraded).map((s) => ({ cx: x(s.frame_index), cy: y(s.spaghetti_score) })),
+    };
+  }, [scores.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!body) {
-    return (
-      <div className="ss-card">
-        <h3 data-beat="timeline-title">Confidence timeline — risk score against the pause threshold</h3>
-        <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ width: "100%", height: H }}>
-          <line x1="0" y1={H - 12} x2={W} y2={H - 12} stroke="var(--ss-line)" strokeDasharray="4 4" />
-          <text x={W / 2} y={H / 2} textAnchor="middle" fill="var(--ss-muted)" fontSize="16">
-            Waiting for the first measurements…
-          </text>
-        </svg>
-      </div>
-    );
-  }
-  const yT = H - 12 - Math.min(1, Math.max(0, pauseThreshold)) * (H - 24);
+  const hasDegraded = (model?.degraded.length ?? 0) > 0;
+
   return (
-    <div className="ss-card">
-      <h3 data-beat="timeline-title">Confidence timeline — risk score against the pause threshold</h3>
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ width: "100%", height: H }} role="img">
-        <line x1="30" y1={yT} x2={W - 30} y2={yT} stroke="var(--ss-amber)" strokeDasharray="6 4" strokeWidth="1.5" />
-        <text x={W - 28} y={yT - 4} textAnchor="end" fill="var(--ss-amber)" fontSize="13">
+    <section aria-label="Confidence timeline" className="card">
+      <span className="caption">Confidence timeline</span>
+      <div className="timeline-legend" aria-hidden="true">
+        <span className="caption">
+          <span className="swatch" style={{ background: "var(--chart-1)" }} />
+          spaghetti score
+        </span>
+        <span className="caption">
+          <span className="swatch" style={{ background: "var(--chart-3)" }} />
+          confidence
+        </span>
+        <span className="caption">
+          <span className="swatch" style={{ background: "var(--chart-2)" }} />
           pause threshold
-        </text>
-        <polyline points={body.conf} fill="none" stroke="var(--ss-muted)" strokeWidth="1.5" />
-        <polyline points={body.spag} fill="none" stroke="var(--ss-verdigris)" strokeWidth="2.5" />
-        {body.alerts.map((d, i) => {
-          const s = body.byFrame.get(d.frame_index);
-          if (!s) return null;
-          const fill = d.action === "request_pause_approval" ? "var(--ss-amber)" : "var(--ss-verdigris)";
-          return (
-            <circle key={i} cx={body.x(d.frame_index)} cy={body.y(s.spaghetti_score)} r="5" fill={fill}>
-              <title>{`${d.action} — ${d.reason_code}`}</title>
-            </circle>
-          );
-        })}
-        {scores
-          .filter((s) => s.degraded)
-          .map((s, i) => (
-            <circle
-              key={`d${i}`}
-              cx={body.x(s.frame_index)}
-              cy={body.y(s.spaghetti_score)}
-              r="3"
-              fill="none"
-              stroke="var(--ss-degraded)"
-            />
+        </span>
+        {hasDegraded ? (
+          <span className="caption">
+            <span className="swatch" style={{ background: "var(--degraded)" }} />
+            degraded
+          </span>
+        ) : null}
+      </div>
+      {model === null ? (
+        <p className="timeline-empty" role="status">
+          Waiting for the first measurements…
+        </p>
+      ) : (
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          preserveAspectRatio="none"
+          style={{ width: "100%", height: H, display: "block" }}
+          role="img"
+          aria-label={`spaghetti score and confidence over ${scores.length} frames`}
+        >
+          <line
+            x1={PAD}
+            x2={W - PAD}
+            y1={model.thresholdY}
+            y2={model.thresholdY}
+            stroke="var(--chart-2)"
+            strokeWidth="1.5"
+            strokeDasharray="6 4"
+          />
+          <text x={W - PAD} y={model.thresholdY - 4} textAnchor="end" fontSize="11" fill="var(--text-muted)">
+            pause threshold
+          </text>
+          <path d={model.conf} fill="none" stroke="var(--chart-3)" strokeWidth="1.5" />
+          <path d={model.spag} fill="none" stroke="var(--chart-1)" strokeWidth="2.5" />
+          {model.degraded.map((p, i) => (
+            <circle key={`g${i}`} cx={p.cx} cy={p.cy} r="4" fill="none" stroke="var(--degraded)" strokeWidth="1.5" />
           ))}
-      </svg>
-    </div>
+          {model.markers.map(({ d, cx, cy }) => {
+            const title = `${d.action} — ${d.reason_code} @ frame ${d.frame_index}`;
+            if (d.action === "request_pause_approval") {
+              return (
+                <circle key={title} cx={cx} cy={cy} r="6" fill="var(--chart-2)">
+                  <title>{title}</title>
+                </circle>
+              );
+            }
+            if (d.action === "capture_evidence") {
+              return (
+                <rect key={title} x={cx - 5} y={cy - 5} width="10" height="10" fill="var(--chart-1)">
+                  <title>{title}</title>
+                </rect>
+              );
+            }
+            const s = 7;
+            return (
+              <polygon
+                key={title}
+                points={`${cx},${cy - s} ${cx + s},${cy + s} ${cx - s},${cy + s}`}
+                fill="var(--chart-1)"
+              >
+                <title>{title}</title>
+              </polygon>
+            );
+          })}
+        </svg>
+      )}
+    </section>
   );
 }

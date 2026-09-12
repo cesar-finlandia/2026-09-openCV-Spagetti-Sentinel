@@ -1,51 +1,66 @@
+import type { JSX } from "react";
 import type { ToolManifestEntry } from "../api";
 import type { TraceRow } from "../selectors";
 
 export type TraceViewProps = { rows: TraceRow[]; tools: ToolManifestEntry[] };
 
-export function TraceView({ rows, tools }: TraceViewProps) {
+export function TraceView({ rows, tools }: TraceViewProps): JSX.Element {
   return (
-    <div className="ss-card">
-      <h3 data-beat="trace-title">Trace — scores next to the actions they produced</h3>
-      <details>
-        <summary>Tools ({tools.length})</summary>
+    <section aria-label="Decision trace" className="card">
+      <span className="caption">Decision trace</span>
+      <details className="tools-details">
+        <summary>Agent tools ({tools.length})</summary>
         <ul>
           {tools.map((t) => (
             <li key={t.name}>
-              <code>{t.name}</code> — {t.description}
-              <pre style={{ whiteSpace: "pre-wrap" }}>{JSON.stringify(t.input_schema)}</pre>
+              <span className="mono">{t.name}</span> — {t.description}{" "}
+              <span className="mono muted">→ {t.output_key}</span>
+              <pre className="mono muted">{JSON.stringify(t.input_schema)}</pre>
             </li>
           ))}
         </ul>
       </details>
-      <table className="ss-trace">
-        <thead>
-          <tr>
-            <th>frame</th>
-            <th>s</th>
-            <th>score</th>
-            <th>conf</th>
-            <th>thr</th>
-            <th>action</th>
-            <th>reason</th>
-            <th>human</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.sequence} className={r.action === "request_pause_approval" ? "ss-alert" : ""}>
-              <td>{r.frameIndex}</td>
-              <td>{(r.tMs / 1000).toFixed(1)}</td>
-              <td>{r.spaghettiScore.toFixed(2)}</td>
-              <td>{r.confidence.toFixed(2)}</td>
-              <td>{r.threshold.toFixed(2)}</td>
-              <td>{r.action}</td>
-              <td>{r.reasonCode}</td>
-              <td>{r.requiresHuman ? "yes" : "no"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+      {rows.length === 0 ? (
+        <p className="small muted" role="status">
+          The trace fills in as frames are scored and decisions are made.
+        </p>
+      ) : (
+        <div className="trace-scroll">
+          <table className="ss-trace">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">t (ms)</th>
+                <th scope="col">frame</th>
+                <th scope="col">spaghetti</th>
+                <th scope="col">confidence</th>
+                <th scope="col">threshold</th>
+                <th scope="col">action</th>
+                <th scope="col">reason</th>
+                <th scope="col">human?</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => {
+                const alert = r.action === "request_pause_approval";
+                return (
+                  <tr key={r.sequence} className={alert ? "row-alert" : r.degraded ? "row-degraded" : undefined}>
+                    <td>{r.sequence}</td>
+                    <td className="readout">{Math.round(r.tMs)}</td>
+                    <td className="readout">{r.frameIndex}</td>
+                    <td className="readout">{r.spaghettiScore.toFixed(2)}</td>
+                    <td className="readout">{r.confidence.toFixed(2)}</td>
+                    <td className="readout">{r.threshold.toFixed(2)}</td>
+                    <td>{r.action}</td>
+                    <td className="mono">{r.reasonCode}</td>
+                    <td>{r.requiresHuman ? "yes" : "no"}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
   );
 }
