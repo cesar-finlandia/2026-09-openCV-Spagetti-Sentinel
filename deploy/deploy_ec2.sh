@@ -28,7 +28,7 @@ while [ $# -gt 0 ]; do
 done
 
 case "$TYPE" in
-  c7g*|m7g*|r7g*|c8g*) ;;
+  c7g*|m7g*|r7g*|c8g*|t4g*) ;;   # Graviton/Arm families (t4g is burstable Graviton)
   *)
     if [ "$ALLOW_NON_GRAVITON" != "1" ]; then
       echo "deploy: ${TYPE} is not a Graviton family — the COOL award requires the Arm path" >&2
@@ -98,6 +98,30 @@ if [ -z "$SG_ID" ] || [ "$SG_ID" = "None" ]; then
     --port -1 --cidr 0.0.0.0/0 --region "$REGION" || true
 fi
 
+# Host identity: the instance needs an IAM role or SSM, ECR pull, the
+# awslogs driver and evidence/rationale calls all fail. (IAM is global.)
+ROLE_NAME="spaghetti-sentinel-host"
+PROFILE_NEW="0"
+if ! aws iam get-role --role-name "$ROLE_NAME" >/dev/null 2>&1; then
+  aws iam create-role --role-name "$ROLE_NAME" \
+    --assume-role-policy-document '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"ec2.amazonaws.com"},"Action":"sts:AssumeRole"}]}' >/dev/null
+  aws iam attach-role-policy --role-name "$ROLE_NAME" \
+    --policy-arn arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+  PROFILE_NEW="1"
+fi
+aws iam put-role-policy --role-name "$ROLE_NAME" --policy-name spaghetti-sentinel-host \
+  --policy-document file://deploy/iam-policy.json
+if ! aws iam get-instance-profile --instance-profile-name "$ROLE_NAME" >/dev/null 2>&1; then
+  aws iam create-instance-profile --instance-profile-name "$ROLE_NAME" >/dev/null
+  aws iam add-role-to-instance-profile --instance-profile-name "$ROLE_NAME" \
+    --role-name "$ROLE_NAME"
+  PROFILE_NEW="1"
+fi
+if [ "$PROFILE_NEW" = "1" ]; then
+  echo "deploy: waiting for the new instance profile to propagate..." >&2
+  sleep 15
+fi
+
 if [ -n "$REUSE" ]; then
   INSTANCE_ID="$REUSE"
   aws ec2 start-instances --instance-ids "$INSTANCE_ID" --region "$REGION" >/dev/null || true
@@ -105,7 +129,8 @@ else
   KEY_ARGS=""
   if [ -n "$KEY_NAME" ]; then KEY_ARGS="--key-name $KEY_NAME"; fi
   INSTANCE_ID="$(aws ec2 run-instances --instance-type "$TYPE" --image-id "$AMI" \
-    --security-group-ids "$SG_ID" --user-data file://deploy/user-data.sh \
+    --security-group-ids "$SG_ID" --iam-instance-profile Name="$ROLE_NAME" \
+    --user-data file://deploy/user-data.sh \
     --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=spaghetti-sentinel}]' \
     $KEY_ARGS --region "$REGION" --query 'Instances[0].InstanceId' --output text)"
 fi
