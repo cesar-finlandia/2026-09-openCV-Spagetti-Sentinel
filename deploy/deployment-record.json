@@ -1,0 +1,26 @@
+{
+  "schema": "spaghetti-sentinel-deployment/1.0.0",
+  "url": "http://ec2-35-94-80-183.us-west-2.compute.amazonaws.com",
+  "health_url": "http://ec2-35-94-80-183.us-west-2.compute.amazonaws.com/healthz",
+  "build_marker": "2026-09-13T16_47_31Z-c17d57a_",
+  "deployed_at": "2026-09-13T17:37:19Z",
+  "region": "us-west-2",
+  "instance_id": "i-04c61e8e49854b7a4",
+  "instance_type": "c7g.xlarge",
+  "arch": "aarch64",
+  "ami_id": "ami-03276ef3c357204ce",
+  "ami_name": "al2023-arm64 (SSM-resolved)",
+  "image_uri": "964515699275.dkr.ecr.us-west-2.amazonaws.com/spaghetti-sentinel:2026-09-13T16_47_31Z-c17d57a_",
+  "image_digest": "sha256:b12f7dc52b2a6aa61ca0032e6cd8a5a22afb57f262d7a7e0a72f83e2f0a19cf9",
+  "opencv_version": "5.0.0",
+  "cool_version": null,
+  "cool_installed": false,
+  "s3_bucket": "spaghetti-sentinel-evidence-964515699275",
+  "probe": {
+    "status": 200,
+    "marker_matched": true,
+    "probed_at": "2026-09-13T17:37:19Z"
+  },
+  "deploy_owner": "DP-DEPLOY",
+  "redeploy_command": "bash deploy/deploy_ec2.sh"
+}

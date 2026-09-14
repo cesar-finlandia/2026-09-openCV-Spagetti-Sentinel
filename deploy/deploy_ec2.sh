@@ -3,7 +3,11 @@
 # Usage: bash deploy/deploy_ec2.sh [--instance-type c7g.xlarge] [--region <r>]
 #                                  [--bucket <name>] [--key-name <kp>]
 #                                  [--reuse-instance <id>] [--dry-run] [--allow-non-graviton]
+#                                  [--skip-build] [--marker <m>] [--image-uri <u>] [--image-digest <d>]
 set -euo pipefail
+# Git Bash (MINGW/MSYS2) rewrites `/aws/...` args to `C:/Program Files/Git/aws/...`,
+# which breaks the SSM public-parameter AMI lookup. Disable path conversion.
+export MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL="*"
 
 TYPE="c7g.xlarge"
 REGION="${AWS_REGION:-us-east-1}"
@@ -12,6 +16,10 @@ KEY_NAME=""
 REUSE=""
 DRY_RUN="0"
 ALLOW_NON_GRAVITON="0"
+SKIP_BUILD="0"
+FLAG_MARKER=""
+FLAG_IMAGE_URI=""
+FLAG_IMAGE_DIGEST=""
 MODEL="${BEDROCK_MODEL_ID:-anthropic.claude-3-5-haiku-20241022-v1:0}"
 
 while [ $# -gt 0 ]; do
@@ -23,6 +31,10 @@ while [ $# -gt 0 ]; do
     --reuse-instance) REUSE="$2"; shift 2 ;;
     --dry-run) DRY_RUN="1"; shift ;;
     --allow-non-graviton) ALLOW_NON_GRAVITON="1"; shift ;;
+    --skip-build) SKIP_BUILD="1"; shift ;;
+    --marker) FLAG_MARKER="$2"; shift 2 ;;
+    --image-uri) FLAG_IMAGE_URI="$2"; shift 2 ;;
+    --image-digest) FLAG_IMAGE_DIGEST="$2"; shift 2 ;;
     *) echo "unknown flag $1" >&2; exit 2 ;;
   esac
 done
@@ -42,15 +54,41 @@ if [ "$DRY_RUN" = "1" ]; then
   echo "  instance-type: ${TYPE} (region ${REGION})"
   echo "  bucket: ${BUCKET:-spaghetti-sentinel-evidence-<account>}"
   echo "  reuse-instance: ${REUSE:-<new instance>}"
-  echo "  image: built by deploy/build_and_push.sh, run on port 80 -> 8000"
+  echo "  skip-build: ${SKIP_BUILD} marker=${FLAG_MARKER:-<from build-marker.txt>} image=${FLAG_IMAGE_URI:-<from ECR>}"
+  echo "  image: built by deploy/build_and_push.sh (skipped when --skip-build), run on port 80 -> 8000"
   echo "  record: deploy/deployment-record.json (written only when healthy)"
   exit 0
 fi
 
-BUILD_OUT="$(bash deploy/build_and_push.sh --region "$REGION")"
-BUILD_MARKER="$(echo "$BUILD_OUT" | grep '^BUILD_MARKER=' | cut -d= -f2)"
-IMAGE_URI="$(echo "$BUILD_OUT" | grep '^IMAGE_URI=' | cut -d= -f2)"
-IMAGE_DIGEST="$(echo "$BUILD_OUT" | grep '^IMAGE_DIGEST=' | cut -d= -f2)"
+if [ "$SKIP_BUILD" = "1" ]; then
+  echo "deploy: skipping build, reusing existing image..." >&2
+  BUILD_MARKER="${FLAG_MARKER:-$(head -1 build-marker.txt 2>/dev/null || echo "")}"
+  ACCOUNT="$(aws sts get-caller-identity --query Account --output text --region "$REGION")"
+  IMAGE_URI="${FLAG_IMAGE_URI:-${ACCOUNT}.dkr.ecr.${REGION}.amazonaws.com/spaghetti-sentinel:${BUILD_MARKER}}"
+  if [ -n "${FLAG_IMAGE_DIGEST:-}" ]; then
+    IMAGE_DIGEST="$FLAG_IMAGE_DIGEST"
+  else
+    IMAGE_DIGEST="$(aws ecr describe-images --repository-name spaghetti-sentinel \
+      --image-ids imageTag="$BUILD_MARKER" --region "$REGION" \
+      --query 'imageDetails[0].imageDigest' --output text 2>/dev/null || echo "")"
+  fi
+else
+  echo "deploy: building image (this takes ~10min)..." >&2
+  BUILD_OUT="$(bash deploy/build_and_push.sh --region "$REGION")"
+  echo "$BUILD_OUT" >&2
+  # NOTE: grep returns 1 on no-match; with `set -o pipefail` that would abort
+  # silently. Temporarily disable pipefail for parsing.
+  set +o pipefail
+  BUILD_MARKER="$(echo "$BUILD_OUT" | grep '^BUILD_MARKER=' | cut -d= -f2 || true)"
+  IMAGE_URI="$(echo "$BUILD_OUT" | grep '^IMAGE_URI=' | cut -d= -f2 || true)"
+  IMAGE_DIGEST="$(echo "$BUILD_OUT" | grep '^IMAGE_DIGEST=' | cut -d= -f2 || true)"
+  set -o pipefail
+fi
+if [ -z "${BUILD_MARKER:-}" ] || [ -z "${IMAGE_URI:-}" ] || [ -z "${IMAGE_DIGEST:-}" ] || [ "$IMAGE_DIGEST" = "None" ]; then
+  echo "deploy: build output missing marker/uri/digest (marker='${BUILD_MARKER:-}' uri='${IMAGE_URI:-}' digest='${IMAGE_DIGEST:-}')" >&2
+  exit 1
+fi
+echo "deploy: marker=${BUILD_MARKER} image=${IMAGE_URI} digest=${IMAGE_DIGEST}" >&2
 
 ACCOUNT="$(aws sts get-caller-identity --query Account --output text --region "$REGION")"
 if [ -z "$BUCKET" ]; then
@@ -77,6 +115,10 @@ aws s3api put-public-access-block --bucket "$BUCKET" \
 AMI="$(aws ssm get-parameters --names /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64 \
   --query 'Parameters[0].Value' --output text --region "$REGION")"
 AMI_NAME="al2023-arm64 (SSM-resolved)"
+if [ -z "$AMI" ] || [ "$AMI" = "None" ] || [ "$AMI" = "null" ]; then
+  echo "deploy: AMI lookup returned '$AMI' — if running under Git Bash, retry with MSYS_NO_PATHCONV=1" >&2
+  exit 1
+fi
 
 SG_ID="$(aws ec2 describe-security-groups --region "$REGION" \
   --filters Name=group-name,Values=spaghetti-sentinel \
@@ -139,12 +181,40 @@ DNS="$(aws ec2 describe-instances --instance-ids "$INSTANCE_ID" --region "$REGIO
   --query 'Reservations[0].Instances[0].PublicDnsName' --output text)"
 URL="http://${DNS}"
 
-REMOTE="docker pull \"$IMAGE_URI\"; docker rm -f spaghetti-sentinel || true; docker run -d --name spaghetti-sentinel --restart unless-stopped -p 80:8000 -e AWS_REGION=\"$REGION\" -e S3_BUCKET=\"$BUCKET\" -e BUILD_MARKER=\"$BUILD_MARKER\" -e SS_BACKEND=cool -e BEDROCK_MODEL_ID=\"$MODEL\" --log-driver=awslogs --log-opt awslogs-region=\"$REGION\" --log-opt awslogs-group=/spaghetti-sentinel \"$IMAGE_URI\""
-if aws ssm send-command --instance-ids "$INSTANCE_ID" --document-name AWS-RunShellScript \
-    --parameters commands="$REMOTE" --region "$REGION" >/dev/null 2>&1; then
+# AWS CLI v2 shorthand `--parameters commands="..."` chokes on embedded double
+# quotes (ParamValidation: Expected ',' received '"'). Always send JSON instead.
+ssm_send() {
+  local _iid="$1"; shift
+  local _cmd="$1"; shift
+  local _payload
+  _payload="$(python3 -c "import json,sys; print(json.dumps({'commands':[sys.argv[1]]}))" "$_cmd")"
+  aws ssm send-command --instance-ids "$_iid" --document-name AWS-RunShellScript \
+    --parameters "$_payload" --region "$REGION" "$@"
+}
+
+REMOTE="aws ecr get-login-password --region \"$REGION\" | docker login --username AWS --password-stdin \"${ACCOUNT}.dkr.ecr.${REGION}.amazonaws.com\"; docker pull \"$IMAGE_URI\"; docker rm -f spaghetti-sentinel || true; docker run -d --name spaghetti-sentinel --restart unless-stopped -p 80:8000 -e AWS_REGION=\"$REGION\" -e S3_BUCKET=\"$BUCKET\" -e BUILD_MARKER=\"$BUILD_MARKER\" -e SS_BACKEND=cool -e BEDROCK_MODEL_ID=\"$MODEL\" \"$IMAGE_URI\""
+echo "deploy: waiting for SSM PingStatus=Online on ${INSTANCE_ID} (up to 5min)..." >&2
+for _i in $(seq 1 10); do
+  PING="$(aws ssm describe-instance-information --filters Key=InstanceIds,Values="$INSTANCE_ID" \
+    --region "$REGION" --query 'InstanceInformationList[0].PingStatus' --output text 2>/dev/null || echo "")"
+  echo "deploy: SSM ping=${PING:-unknown} (${_i}/10)" >&2
+  if [ "$PING" = "Online" ]; then break; fi
+  sleep 30
+done
+echo "deploy: sending container start over SSM..." >&2
+SSM_OK="0"
+for _i in $(seq 1 5); do
+  if ssm_send "$INSTANCE_ID" "$REMOTE"; then
+    SSM_OK="1"
+    break
+  fi
+  echo "deploy: SSM send failed (${_i}/5), retrying in 30s..." >&2
+  sleep 30
+done
+if [ "$SSM_OK" = "1" ]; then
   echo "deploy: container started over SSM"
 else
-  echo "deploy: SSM unavailable — run over SSH:" >&2
+  echo "deploy: SSM unavailable after 10 retries — last error above; run over SSH:" >&2
   # shellcheck disable=SC2001
   echo "$REMOTE" | sed 's/^/  /' >&2
   exit 1
@@ -152,15 +222,13 @@ fi
 
 if ! bash deploy/healthcheck.sh --url "$URL" --marker "$BUILD_MARKER" --retries 20 --interval 10; then
   echo "deploy: unhealthy — last 50 container log lines:" >&2
-  aws ssm send-command --instance-ids "$INSTANCE_ID" --document-name AWS-RunShellScript \
-    --parameters commands="docker logs --tail 50 spaghetti-sentinel" \
-    --region "$REGION" >/dev/null || true
+  ssm_send "$INSTANCE_ID" "docker logs --tail 50 spaghetti-sentinel" >/dev/null || true
   exit 1
 fi
 
-VERSIONS="$(aws ssm send-command --instance-ids "$INSTANCE_ID" --document-name AWS-RunShellScript \
-  --parameters commands="docker exec spaghetti-sentinel python3.11 -c \"import cv2, json; from app.vision.backend import cool_version; print(json.dumps({'opencv': cv2.__version__, 'cool': cool_version()}))\"" \
-  --region "$REGION" --query 'Command.CommandId' --output text)"
+VERSIONS="$(ssm_send "$INSTANCE_ID" \
+  "docker exec spaghetti-sentinel python3.11 -c \"import cv2, json; from app.vision.backend import cool_version; print(json.dumps({'opencv': cv2.__version__, 'cool': cool_version()}))\"" \
+  --query 'Command.CommandId' --output text)"
 sleep 10
 VERSIONS_OUT="$(aws ssm get-command-invocation --command-id "$VERSIONS" --instance-id "$INSTANCE_ID" \
   --region "$REGION" --query StandardOutputContent --output text)"
@@ -173,7 +241,7 @@ NOW="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 python3 - "$URL" "$BUILD_MARKER" "$NOW" "$REGION" "$INSTANCE_ID" "$TYPE" "$AMI" "$AMI_NAME" \
   "$IMAGE_URI" "$IMAGE_DIGEST" "$OPENCV_VER" "$COOL_VER" "$COOL_INSTALLED" "$BUCKET" <<'PY'
 import json, sys
-url, marker, now, region, iid, itype, ami, ami_name, uri, digest, ocv, cool, cool_inst, bucket = sys.argv[1:13]
+url, marker, now, region, iid, itype, ami, ami_name, uri, digest, ocv, cool, cool_inst, bucket = sys.argv[1:15]
 record = {
   "schema": "spaghetti-sentinel-deployment/1.0.0",
   "url": url, "health_url": url + "/healthz",

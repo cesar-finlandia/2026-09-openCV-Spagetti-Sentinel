@@ -14,7 +14,7 @@
       "Sid": "BedrockRationale",
       "Effect": "Allow",
       "Action": ["bedrock:InvokeModel"],
-      "Resource": "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-5-haiku-20241022-v1:0"
+      "Resource": "arn:aws:bedrock:*::foundation-model/anthropic.claude-3-5-haiku-20241022-v1:0"
     },
     {
       "Sid": "EcrPull",
@@ -29,8 +29,8 @@
     {
       "Sid": "CloudWatchLogs",
       "Effect": "Allow",
-      "Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
-      "Resource": "arn:aws:logs:us-east-1:*:log-group:/spaghetti-sentinel:*"
+      "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+      "Resource": "arn:aws:logs:*:*:log-group:/spaghetti-sentinel:*"
     }
   ]
 }

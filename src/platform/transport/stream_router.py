@@ -50,14 +50,50 @@ HUB = SseFanout()
 async def _stream(request: Request) -> AsyncIterator[str]:
     q = HUB.attach()
     try:
+        # Replay history for late subscribers (TRN-RES-02: a reconnect starts
+        # a FRESH subscription, and the client resets its buffer — so the
+        # server must re-send what was already published, otherwise a client
+        # that attaches after a sub-second run sees an empty CONNECTING page
+        # for a completed run). Attach happens before the collect, so nothing
+        # published in between is lost; live items already replayed are
+        # skipped below by (trace_id, sequence).
+        replayed_max = -1
+        replay_trace: str | None = None
+        try:
+            replay_trace = request.query_params.get("trace_id")
+        except Exception:
+            replay_trace = None
+        if replay_trace:
+            try:
+                from app.api.publisher import get_publisher
+
+                pub = get_publisher(replay_trace)
+                history = pub.collect()["events"] if pub is not None else []
+            except Exception:
+                history = []
+            for envelope in history:
+                try:
+                    replayed_max = max(replayed_max, int(envelope.get("sequence", -1)))
+                except Exception:
+                    pass
+                yield f"id: {envelope['sequence']}\nevent: envelope\ndata: {json.dumps(envelope)}\n\n"
         yield ": connected\n\n"
         while True:
             if await request.is_disconnected():
                 break
-            envelope = await asyncio.wait_for(q.get(), timeout=15.0)
+            try:
+                envelope = await asyncio.wait_for(q.get(), timeout=15.0)
+            except asyncio.TimeoutError:
+                yield ": keepalive\n\n"  # comment frame as SSE heartbeat
+                continue
+            try:
+                if (replay_trace is not None
+                        and envelope.get("trace_id") == replay_trace
+                        and int(envelope.get("sequence", -1)) <= replayed_max):
+                    continue  # already replayed above
+            except Exception:
+                pass
             yield f"id: {envelope['sequence']}\nevent: envelope\ndata: {json.dumps(envelope)}\n\n"
-    except asyncio.TimeoutError:
-        yield ": keepalive\n\n"  # comment frame as SSE heartbeat
     finally:
         HUB.detach(q)
 

@@ -1,0 +1,1281 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: scenarios\uc10-degraded-banner.spec.ts >> uc10 a dead evidence vault degrades honestly and still completes
+- Location: e2e\scenarios\uc10-degraded-banner.spec.ts:12:1
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: getByRole('status', { name: /^Running degraded:/ })
+Expected: visible
+Timeout: 90000ms
+Error: element(s) not found
+
+Call log:
+  - Expect "toBeVisible" with timeout 90000ms
+  - waiting for getByRole('status', { name: /^Running degraded:/ })
+
+```
+
+```yaml
+- banner:
+  - text: Spaghetti Sentinel baseline OpenCV 5.0.0 e2e-2026-09-13T20-33-40-714Z
+  - 'status "stream status: live"': live
+  - switch "Switch to dark theme"
+- status: "Running degraded: rationale"
+- text: Spaghetti score 0.59 -0.01 since frame 294 Confidence 0.80 -0.00 since frame 294
+- region "Confidence timeline":
+  - text: Confidence timeline
+  - img "spaghetti score and confidence over 100 frames": pause threshold
+- region "Latest decision":
+  - text: "Latest decision capture evidence texture_rising rationale: measured fallback"
+  - paragraph: Frame 297 at 9.9 s scored 0.59 against a threshold of 0.45.
+  - status: none
+  - paragraph
+  - list:
+    - listitem: Look at the saved clip before touching the printer.
+    - listitem: Check whether the part has detached from the bed at a corner.
+    - listitem: Confirm the nozzle is not dragging through a raised region.
+- region "Evidence":
+  - text: Evidence
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000159.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000159.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000159.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000162.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000162.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000162.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000165.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000165.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000165.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000168.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000168.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000168.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000171.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000171.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000171.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000174.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000174.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000174.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000177.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000177.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000177.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000180.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000180.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000180.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000183.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000183.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000183.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000186.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000186.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000186.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000189.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000189.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000189.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000192.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000192.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000192.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000195.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000195.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000195.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000198.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000198.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000198.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000201.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000201.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000201.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000204.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000204.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000204.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000207.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000207.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000207.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000210.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000210.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000210.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000213.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000213.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000213.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000216.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000216.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000216.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000219.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000219.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000219.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000222.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000222.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000222.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000225.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000225.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000225.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000228.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000228.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000228.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000231.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000231.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000231.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000234.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000234.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000234.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000237.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000237.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000237.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000240.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000240.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000240.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000243.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000243.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000243.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000246.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000246.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000246.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000249.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000249.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000249.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000252.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000252.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000252.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000255.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000255.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000255.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000258.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000258.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000258.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000261.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000261.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000261.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000264.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000264.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000264.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000267.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000267.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000267.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000270.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000270.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000270.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000273.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000273.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000273.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000276.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000276.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000276.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000279.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000279.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000279.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000282.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000282.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000282.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000285.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000285.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000285.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000288.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000288.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000288.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000291.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000291.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000291.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000294.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000294.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000294.mp4
+  - link "open evidence C:\\Users\\cesar\\Documents\\CursorAI-projects\\hackathon-entries\\2026-09-openCV\\.e2e-evidence\\runs\\ab7506c7-3137-4624-8e12-dfef4afaae4e\\clip-000297.mp4":
+    - /url: file://C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000297.mp4
+    - text: C:\Users\cesar\Documents\CursorAI-projects\hackathon-entries\2026-09-openCV\.e2e-evidence\runs\ab7506c7-3137-4624-8e12-dfef4afaae4e\clip-000297.mp4
+- region "Start a run":
+  - text: Start a run Demo clip
+  - combobox "Demo clip":
+    - option "first available clip" [selected]
+    - option "good-first-layer — nominal"
+    - option "stringing — warning"
+    - option "spaghetti — failure"
+    - option "lighting-shift — nominal"
+  - text: OpenCV backend
+  - combobox "OpenCV backend":
+    - option "baseline" [selected]
+    - option "cool"
+  - checkbox "Replay (offline) Runs from cached frames — no AWS, no network." [checked]
+  - text: Replay (offline) Runs from cached frames — no AWS, no network.
+  - button "Start watching"
+  - button "Upload your own clip"
+- region "Pipeline progress":
+  - text: Pipeline
+  - list:
+    - listitem: started Starting
+    - listitem: streaming Reading frames
+    - listitem: done OpenCV 5 analysis
+    - listitem: done Decision
+    - listitem: done Action
+    - listitem: done Explanation
+    - listitem: done Evidence saved
+    - listitem: done Finished
+  - status: none
+- region "Decision trace":
+  - text: Decision trace
+  - group: Agent tools (4)
+  - table:
+    - rowgroup:
+      - row "# t (ms) frame spaghetti confidence threshold action reason human?":
+        - columnheader "#"
+        - columnheader "t (ms)"
+        - columnheader "frame"
+        - columnheader "spaghetti"
+        - columnheader "confidence"
+        - columnheader "threshold"
+        - columnheader "action"
+        - columnheader "reason"
+        - columnheader "human?"
+    - rowgroup:
+      - row "0 0 0 0.23 0.09 0.55 continue low_confidence no":
+        - cell "0"
+        - cell "0"
+        - cell "0"
+        - cell "0.23"
+        - cell "0.09"
+        - cell "0.55"
+        - cell "continue"
+        - cell "low_confidence"
+        - cell "no"
+      - row "1 100 3 0.24 0.18 0.55 continue low_confidence no":
+        - cell "1"
+        - cell "100"
+        - cell "3"
+        - cell "0.24"
+        - cell "0.18"
+        - cell "0.55"
+        - cell "continue"
+        - cell "low_confidence"
+        - cell "no"
+      - row "2 200 6 0.24 0.27 0.55 continue low_confidence no":
+        - cell "2"
+        - cell "200"
+        - cell "6"
+        - cell "0.24"
+        - cell "0.27"
+        - cell "0.55"
+        - cell "continue"
+        - cell "low_confidence"
+        - cell "no"
+      - row "3 300 9 0.24 0.36 0.55 continue low_confidence no":
+        - cell "3"
+        - cell "300"
+        - cell "9"
+        - cell "0.24"
+        - cell "0.36"
+        - cell "0.55"
+        - cell "continue"
+        - cell "low_confidence"
+        - cell "no"
+      - row "4 400 12 0.23 0.45 0.55 continue low_confidence no":
+        - cell "4"
+        - cell "400"
+        - cell "12"
+        - cell "0.23"
+        - cell "0.45"
+        - cell "0.55"
+        - cell "continue"
+        - cell "low_confidence"
+        - cell "no"
+      - row "5 500 15 0.22 0.53 0.55 continue low_confidence no":
+        - cell "5"
+        - cell "500"
+        - cell "15"
+        - cell "0.22"
+        - cell "0.53"
+        - cell "0.55"
+        - cell "continue"
+        - cell "low_confidence"
+        - cell "no"
+      - row "6 600 18 0.22 0.62 0.45 continue nominal no":
+        - cell "6"
+        - cell "600"
+        - cell "18"
+        - cell "0.22"
+        - cell "0.62"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "7 700 21 0.22 0.71 0.45 continue nominal no":
+        - cell "7"
+        - cell "700"
+        - cell "21"
+        - cell "0.22"
+        - cell "0.71"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "8 800 24 0.20 0.72 0.45 continue nominal no":
+        - cell "8"
+        - cell "800"
+        - cell "24"
+        - cell "0.20"
+        - cell "0.72"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "9 900 27 0.20 0.72 0.45 continue nominal no":
+        - cell "9"
+        - cell "900"
+        - cell "27"
+        - cell "0.20"
+        - cell "0.72"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "10 1000 30 0.20 0.72 0.45 continue nominal no":
+        - cell "10"
+        - cell "1000"
+        - cell "30"
+        - cell "0.20"
+        - cell "0.72"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "11 1100 33 0.19 0.72 0.45 continue nominal no":
+        - cell "11"
+        - cell "1100"
+        - cell "33"
+        - cell "0.19"
+        - cell "0.72"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "12 1200 36 0.18 0.72 0.45 continue nominal no":
+        - cell "12"
+        - cell "1200"
+        - cell "36"
+        - cell "0.18"
+        - cell "0.72"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "13 1300 39 0.18 0.72 0.45 continue nominal no":
+        - cell "13"
+        - cell "1300"
+        - cell "39"
+        - cell "0.18"
+        - cell "0.72"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "14 1400 42 0.18 0.72 0.45 continue nominal no":
+        - cell "14"
+        - cell "1400"
+        - cell "42"
+        - cell "0.18"
+        - cell "0.72"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "15 1500 45 0.18 0.72 0.45 continue nominal no":
+        - cell "15"
+        - cell "1500"
+        - cell "45"
+        - cell "0.18"
+        - cell "0.72"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "16 1600 48 0.17 0.72 0.45 continue nominal no":
+        - cell "16"
+        - cell "1600"
+        - cell "48"
+        - cell "0.17"
+        - cell "0.72"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "17 1700 51 0.17 0.72 0.45 continue nominal no":
+        - cell "17"
+        - cell "1700"
+        - cell "51"
+        - cell "0.17"
+        - cell "0.72"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "18 1800 54 0.17 0.72 0.45 continue nominal no":
+        - cell "18"
+        - cell "1800"
+        - cell "54"
+        - cell "0.17"
+        - cell "0.72"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "19 1900 57 0.17 0.73 0.45 continue nominal no":
+        - cell "19"
+        - cell "1900"
+        - cell "57"
+        - cell "0.17"
+        - cell "0.73"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "20 2000 60 0.16 0.73 0.45 continue nominal no":
+        - cell "20"
+        - cell "2000"
+        - cell "60"
+        - cell "0.16"
+        - cell "0.73"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "21 2100 63 0.16 0.73 0.45 continue nominal no":
+        - cell "21"
+        - cell "2100"
+        - cell "63"
+        - cell "0.16"
+        - cell "0.73"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "22 2200 66 0.16 0.73 0.45 continue nominal no":
+        - cell "22"
+        - cell "2200"
+        - cell "66"
+        - cell "0.16"
+        - cell "0.73"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "23 2300 69 0.16 0.73 0.45 continue nominal no":
+        - cell "23"
+        - cell "2300"
+        - cell "69"
+        - cell "0.16"
+        - cell "0.73"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "24 2400 72 0.16 0.73 0.45 continue nominal no":
+        - cell "24"
+        - cell "2400"
+        - cell "72"
+        - cell "0.16"
+        - cell "0.73"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "25 2500 75 0.16 0.73 0.45 continue nominal no":
+        - cell "25"
+        - cell "2500"
+        - cell "75"
+        - cell "0.16"
+        - cell "0.73"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "26 2600 78 0.16 0.73 0.45 continue nominal no":
+        - cell "26"
+        - cell "2600"
+        - cell "78"
+        - cell "0.16"
+        - cell "0.73"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "27 2700 81 0.15 0.73 0.45 continue nominal no":
+        - cell "27"
+        - cell "2700"
+        - cell "81"
+        - cell "0.15"
+        - cell "0.73"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "28 2800 84 0.15 0.73 0.45 continue nominal no":
+        - cell "28"
+        - cell "2800"
+        - cell "84"
+        - cell "0.15"
+        - cell "0.73"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "29 2900 87 0.15 0.73 0.45 continue nominal no":
+        - cell "29"
+        - cell "2900"
+        - cell "87"
+        - cell "0.15"
+        - cell "0.73"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "30 3000 90 0.15 0.73 0.45 continue nominal no":
+        - cell "30"
+        - cell "3000"
+        - cell "90"
+        - cell "0.15"
+        - cell "0.73"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "31 3100 93 0.15 0.73 0.45 continue nominal no":
+        - cell "31"
+        - cell "3100"
+        - cell "93"
+        - cell "0.15"
+        - cell "0.73"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "32 3200 96 0.15 0.73 0.45 continue nominal no":
+        - cell "32"
+        - cell "3200"
+        - cell "96"
+        - cell "0.15"
+        - cell "0.73"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "33 3300 99 0.15 0.74 0.45 continue nominal no":
+        - cell "33"
+        - cell "3300"
+        - cell "99"
+        - cell "0.15"
+        - cell "0.74"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "34 3400 102 0.14 0.74 0.45 continue nominal no":
+        - cell "34"
+        - cell "3400"
+        - cell "102"
+        - cell "0.14"
+        - cell "0.74"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "35 3500 105 0.14 0.74 0.45 continue nominal no":
+        - cell "35"
+        - cell "3500"
+        - cell "105"
+        - cell "0.14"
+        - cell "0.74"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "36 3600 108 0.14 0.74 0.45 continue nominal no":
+        - cell "36"
+        - cell "3600"
+        - cell "108"
+        - cell "0.14"
+        - cell "0.74"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "37 3700 111 0.15 0.74 0.45 continue nominal no":
+        - cell "37"
+        - cell "3700"
+        - cell "111"
+        - cell "0.15"
+        - cell "0.74"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "38 3800 114 0.14 0.74 0.45 continue nominal no":
+        - cell "38"
+        - cell "3800"
+        - cell "114"
+        - cell "0.14"
+        - cell "0.74"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "39 3900 117 0.14 0.74 0.45 continue nominal no":
+        - cell "39"
+        - cell "3900"
+        - cell "117"
+        - cell "0.14"
+        - cell "0.74"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "40 4000 120 0.14 0.74 0.45 continue nominal no":
+        - cell "40"
+        - cell "4000"
+        - cell "120"
+        - cell "0.14"
+        - cell "0.74"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "41 4100 123 0.16 0.75 0.45 continue nominal no":
+        - cell "41"
+        - cell "4100"
+        - cell "123"
+        - cell "0.16"
+        - cell "0.75"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "42 4200 126 0.18 0.75 0.45 continue nominal no":
+        - cell "42"
+        - cell "4200"
+        - cell "126"
+        - cell "0.18"
+        - cell "0.75"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "43 4300 129 0.21 0.75 0.45 continue nominal no":
+        - cell "43"
+        - cell "4300"
+        - cell "129"
+        - cell "0.21"
+        - cell "0.75"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "44 4400 132 0.24 0.76 0.45 continue nominal no":
+        - cell "44"
+        - cell "4400"
+        - cell "132"
+        - cell "0.24"
+        - cell "0.76"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "45 4500 135 0.26 0.76 0.45 continue nominal no":
+        - cell "45"
+        - cell "4500"
+        - cell "135"
+        - cell "0.26"
+        - cell "0.76"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "46 4600 138 0.29 0.76 0.45 continue nominal no":
+        - cell "46"
+        - cell "4600"
+        - cell "138"
+        - cell "0.29"
+        - cell "0.76"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "47 4700 141 0.31 0.76 0.45 continue nominal no":
+        - cell "47"
+        - cell "4700"
+        - cell "141"
+        - cell "0.31"
+        - cell "0.76"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "48 4800 144 0.33 0.76 0.45 continue nominal no":
+        - cell "48"
+        - cell "4800"
+        - cell "144"
+        - cell "0.33"
+        - cell "0.76"
+        - cell "0.45"
+        - cell "continue"
+        - cell "nominal"
+        - cell "no"
+      - row "49 4900 147 0.35 0.77 0.27 nudge_parameters texture_rising no":
+        - cell "49"
+        - cell "4900"
+        - cell "147"
+        - cell "0.35"
+        - cell "0.77"
+        - cell "0.27"
+        - cell "nudge_parameters"
+        - cell "texture_rising"
+        - cell "no"
+      - row "50 5000 150 0.38 0.77 0.27 nudge_parameters texture_rising no":
+        - cell "50"
+        - cell "5000"
+        - cell "150"
+        - cell "0.38"
+        - cell "0.77"
+        - cell "0.27"
+        - cell "nudge_parameters"
+        - cell "texture_rising"
+        - cell "no"
+      - row "51 5100 153 0.41 0.77 0.27 nudge_parameters texture_rising no":
+        - cell "51"
+        - cell "5100"
+        - cell "153"
+        - cell "0.41"
+        - cell "0.77"
+        - cell "0.27"
+        - cell "nudge_parameters"
+        - cell "texture_rising"
+        - cell "no"
+      - row "52 5200 156 0.43 0.77 0.27 nudge_parameters texture_rising no":
+        - cell "52"
+        - cell "5200"
+        - cell "156"
+        - cell "0.43"
+        - cell "0.77"
+        - cell "0.27"
+        - cell "nudge_parameters"
+        - cell "texture_rising"
+        - cell "no"
+      - row "53 5300 159 0.46 0.78 0.45 capture_evidence texture_rising no":
+        - cell "53"
+        - cell "5300"
+        - cell "159"
+        - cell "0.46"
+        - cell "0.78"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "54 5400 162 0.48 0.77 0.45 capture_evidence texture_rising no":
+        - cell "54"
+        - cell "5400"
+        - cell "162"
+        - cell "0.48"
+        - cell "0.77"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "55 5500 165 0.50 0.78 0.45 capture_evidence texture_rising no":
+        - cell "55"
+        - cell "5500"
+        - cell "165"
+        - cell "0.50"
+        - cell "0.78"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "56 5600 168 0.52 0.78 0.45 capture_evidence texture_rising no":
+        - cell "56"
+        - cell "5600"
+        - cell "168"
+        - cell "0.52"
+        - cell "0.78"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "57 5700 171 0.54 0.79 0.45 capture_evidence texture_rising no":
+        - cell "57"
+        - cell "5700"
+        - cell "171"
+        - cell "0.54"
+        - cell "0.79"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "58 5800 174 0.56 0.78 0.45 capture_evidence texture_rising no":
+        - cell "58"
+        - cell "5800"
+        - cell "174"
+        - cell "0.56"
+        - cell "0.78"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "59 5900 177 0.57 0.79 0.45 capture_evidence texture_rising no":
+        - cell "59"
+        - cell "5900"
+        - cell "177"
+        - cell "0.57"
+        - cell "0.79"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "60 6000 180 0.59 0.79 0.45 capture_evidence texture_rising no":
+        - cell "60"
+        - cell "6000"
+        - cell "180"
+        - cell "0.59"
+        - cell "0.79"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "61 6100 183 0.60 0.79 0.45 capture_evidence texture_rising no":
+        - cell "61"
+        - cell "6100"
+        - cell "183"
+        - cell "0.60"
+        - cell "0.79"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "62 6200 186 0.61 0.79 0.45 capture_evidence texture_rising no":
+        - cell "62"
+        - cell "6200"
+        - cell "186"
+        - cell "0.61"
+        - cell "0.79"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "63 6300 189 0.62 0.79 0.45 capture_evidence texture_rising no":
+        - cell "63"
+        - cell "6300"
+        - cell "189"
+        - cell "0.62"
+        - cell "0.79"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "64 6400 192 0.62 0.79 0.45 capture_evidence texture_rising no":
+        - cell "64"
+        - cell "6400"
+        - cell "192"
+        - cell "0.62"
+        - cell "0.79"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "65 6500 195 0.62 0.79 0.45 capture_evidence texture_rising no":
+        - cell "65"
+        - cell "6500"
+        - cell "195"
+        - cell "0.62"
+        - cell "0.79"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "66 6600 198 0.63 0.79 0.45 capture_evidence texture_rising no":
+        - cell "66"
+        - cell "6600"
+        - cell "198"
+        - cell "0.63"
+        - cell "0.79"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "67 6700 201 0.63 0.79 0.45 capture_evidence texture_rising no":
+        - cell "67"
+        - cell "6700"
+        - cell "201"
+        - cell "0.63"
+        - cell "0.79"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "68 6800 204 0.62 0.79 0.45 capture_evidence texture_rising no":
+        - cell "68"
+        - cell "6800"
+        - cell "204"
+        - cell "0.62"
+        - cell "0.79"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "69 6900 207 0.62 0.79 0.45 capture_evidence texture_rising no":
+        - cell "69"
+        - cell "6900"
+        - cell "207"
+        - cell "0.62"
+        - cell "0.79"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "70 7000 210 0.62 0.80 0.45 capture_evidence texture_rising no":
+        - cell "70"
+        - cell "7000"
+        - cell "210"
+        - cell "0.62"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "71 7100 213 0.61 0.79 0.45 capture_evidence texture_rising no":
+        - cell "71"
+        - cell "7100"
+        - cell "213"
+        - cell "0.61"
+        - cell "0.79"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "72 7200 216 0.60 0.80 0.45 capture_evidence texture_rising no":
+        - cell "72"
+        - cell "7200"
+        - cell "216"
+        - cell "0.60"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "73 7300 219 0.61 0.80 0.45 capture_evidence texture_rising no":
+        - cell "73"
+        - cell "7300"
+        - cell "219"
+        - cell "0.61"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "74 7400 222 0.62 0.80 0.45 capture_evidence texture_rising no":
+        - cell "74"
+        - cell "7400"
+        - cell "222"
+        - cell "0.62"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "75 7500 225 0.61 0.80 0.45 capture_evidence texture_rising no":
+        - cell "75"
+        - cell "7500"
+        - cell "225"
+        - cell "0.61"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "76 7600 228 0.60 0.80 0.45 capture_evidence texture_rising no":
+        - cell "76"
+        - cell "7600"
+        - cell "228"
+        - cell "0.60"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "77 7700 231 0.61 0.80 0.45 capture_evidence texture_rising no":
+        - cell "77"
+        - cell "7700"
+        - cell "231"
+        - cell "0.61"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "78 7800 234 0.59 0.80 0.45 capture_evidence texture_rising no":
+        - cell "78"
+        - cell "7800"
+        - cell "234"
+        - cell "0.59"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "79 7900 237 0.60 0.80 0.45 capture_evidence texture_rising no":
+        - cell "79"
+        - cell "7900"
+        - cell "237"
+        - cell "0.60"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "80 8000 240 0.60 0.80 0.45 capture_evidence texture_rising no":
+        - cell "80"
+        - cell "8000"
+        - cell "240"
+        - cell "0.60"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "81 8100 243 0.60 0.80 0.45 capture_evidence texture_rising no":
+        - cell "81"
+        - cell "8100"
+        - cell "243"
+        - cell "0.60"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "82 8200 246 0.60 0.81 0.45 capture_evidence texture_rising no":
+        - cell "82"
+        - cell "8200"
+        - cell "246"
+        - cell "0.60"
+        - cell "0.81"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "83 8300 249 0.60 0.81 0.45 capture_evidence texture_rising no":
+        - cell "83"
+        - cell "8300"
+        - cell "249"
+        - cell "0.60"
+        - cell "0.81"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "84 8400 252 0.59 0.80 0.45 capture_evidence texture_rising no":
+        - cell "84"
+        - cell "8400"
+        - cell "252"
+        - cell "0.59"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "85 8500 255 0.58 0.80 0.45 capture_evidence texture_rising no":
+        - cell "85"
+        - cell "8500"
+        - cell "255"
+        - cell "0.58"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "86 8600 258 0.58 0.80 0.45 capture_evidence texture_rising no":
+        - cell "86"
+        - cell "8600"
+        - cell "258"
+        - cell "0.58"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "87 8700 261 0.59 0.81 0.45 capture_evidence texture_rising no":
+        - cell "87"
+        - cell "8700"
+        - cell "261"
+        - cell "0.59"
+        - cell "0.81"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "88 8800 264 0.58 0.80 0.45 capture_evidence texture_rising no":
+        - cell "88"
+        - cell "8800"
+        - cell "264"
+        - cell "0.58"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "89 8900 267 0.60 0.81 0.45 capture_evidence texture_rising no":
+        - cell "89"
+        - cell "8900"
+        - cell "267"
+        - cell "0.60"
+        - cell "0.81"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "90 9000 270 0.59 0.80 0.45 capture_evidence texture_rising no":
+        - cell "90"
+        - cell "9000"
+        - cell "270"
+        - cell "0.59"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "91 9100 273 0.59 0.81 0.45 capture_evidence texture_rising no":
+        - cell "91"
+        - cell "9100"
+        - cell "273"
+        - cell "0.59"
+        - cell "0.81"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "92 9200 276 0.58 0.80 0.45 capture_evidence texture_rising no":
+        - cell "92"
+        - cell "9200"
+        - cell "276"
+        - cell "0.58"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "93 9300 279 0.58 0.80 0.45 capture_evidence texture_rising no":
+        - cell "93"
+        - cell "9300"
+        - cell "279"
+        - cell "0.58"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "94 9400 282 0.58 0.81 0.45 capture_evidence texture_rising no":
+        - cell "94"
+        - cell "9400"
+        - cell "282"
+        - cell "0.58"
+        - cell "0.81"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "95 9500 285 0.58 0.80 0.45 capture_evidence texture_rising no":
+        - cell "95"
+        - cell "9500"
+        - cell "285"
+        - cell "0.58"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "96 9600 288 0.58 0.80 0.45 capture_evidence texture_rising no":
+        - cell "96"
+        - cell "9600"
+        - cell "288"
+        - cell "0.58"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "97 9700 291 0.60 0.81 0.45 capture_evidence texture_rising no":
+        - cell "97"
+        - cell "9700"
+        - cell "291"
+        - cell "0.60"
+        - cell "0.81"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "98 9800 294 0.60 0.81 0.45 capture_evidence texture_rising no":
+        - cell "98"
+        - cell "9800"
+        - cell "294"
+        - cell "0.60"
+        - cell "0.81"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+      - row "99 9900 297 0.59 0.80 0.45 capture_evidence texture_rising no":
+        - cell "99"
+        - cell "9900"
+        - cell "297"
+        - cell "0.59"
+        - cell "0.80"
+        - cell "0.45"
+        - cell "capture_evidence"
+        - cell "texture_rising"
+        - cell "no"
+- contentinfo "About this system":
+  - paragraph: Demo footage is synthetic — generated for evaluation, watermarked.
+  - paragraph: This system recommends; it never controls the printer.
+  - paragraph: build e2e-2026-09-13T20-33-40-714Z
+```
+
+# Test source
+
+```ts
+  1  | // uc10 — the system tells the truth when it is degraded: the evidence vault
+  2  | // is unavailable, the banner names it, the alert is still delivered and the
+  3  | // run still completes.
+  4  | // NOTE (fix-log #2): no RES_FORCED_DEGRADED mechanism exists in app/api, and
+  5  | // an undecodable upload completes 0-frame with no degraded envelopes — so the
+  6  | // user-true trigger is a genuinely unavailable vault (E2E_BREAK_EVIDENCE
+  7  | // points SS_EVIDENCE_DIR at a file), mirroring eval's
+  8  | // evidence-store-unavailable case at the UI level.
+  9  | import { appTest, expect } from "../fixtures/app";
+  10 | import { startClipRun, waitSummary } from "../fixtures/runs";
+  11 | 
+  12 | appTest("uc10 a dead evidence vault degrades honestly and still completes", async ({
+  13 |   page,
+  14 |   serverURL,
+  15 | }) => {
+  16 |   process.env.E2E_BREAK_EVIDENCE = "1";
+  17 |   try {
+  18 |     await page.goto(`${serverURL}/`);
+  19 |     // Real pipeline (evidence only materialises off replay — fix-log #12).
+  20 |     await page.getByLabel("Replay (offline)").uncheck();
+  21 |     const traceId = await startClipRun(page, "stringing", "baseline");
+  22 | 
+  23 |     // The banner appears with at least one reason.
+  24 |     const banner = page.getByRole("status", { name: /^Running degraded:/ });
+> 25 |     await expect(banner).toBeVisible({ timeout: 90_000 });
+     |                          ^ Error: expect(locator).toBeVisible() failed
+  26 |     expect(
+  27 |       (await banner.innerText()).replace(/^Running degraded:\s*/, "").length,
+  28 |     ).toBeGreaterThan(0);
+  29 | 
+  30 |     // The page still completes a run; no unhandled error (console gate).
+  31 |     const events = await waitSummary(page, serverURL, traceId, 110_000);
+  32 |     expect(events.some((e) => e.step_id === "run-summary")).toBe(true);
+  33 |   } finally {
+  34 |     delete process.env.E2E_BREAK_EVIDENCE;
+  35 |   }
+  36 | });
+  37 | 
+```
