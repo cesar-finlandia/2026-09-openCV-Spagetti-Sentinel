@@ -1,0 +1,20 @@
+<!doctype html>
+<!-- DP-UI-V2 §7: the audit must be able to fail. Three seeded defects:
+     (1) a 14px label, (2) a card with no data-demo-focus anywhere on the page,
+     (3) a 0ms transition on a state-change class. -->
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <title>broken craft fixture</title>
+    <style>
+      body { background: #0E100E; color: #F2F5EF; font-family: system-ui; font-size: 18px; }
+      .label { font-size: 14px; }                       /* defect 1 */
+      .decision-card { transition: opacity 0ms linear; } /* defect 3 */
+    </style>
+  </head>
+  <body>
+    <span class="label">frame 195</span>
+    <div class="decision-card">request pause approval</div>
+    <!-- defect 2: no element carries data-demo-focus -->
+  </body>
+</html>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Spaghetti Sentinel">
+  <title>Spaghetti Sentinel</title>
+  <!-- A watchful eye whose pupil is a tangle: the product in one shape.
+       Monochrome, currentColor, legible at 64px and at 1200px. -->
+  <path fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
+        d="M4 32c8-12 18-18 28-18s20 6 28 18c-8 12-18 18-28 18S12 44 4 32Z"/>
+  <path fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"
+        d="M24 32c0-6 5-10 10-10M40 28c3 4 2 10-3 12s-11 0-12-5"/>
+</svg>

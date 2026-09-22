@@ -15,7 +15,7 @@ function pathFor(values: { x: number; y: number }[]): string {
   return values.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
 }
 
-export function ConfidenceTimeline({ scores, decisions, pauseThreshold, height = 200 }: ConfidenceTimelineProps): JSX.Element {
+export function ConfidenceTimeline({ scores, decisions, pauseThreshold, height = 260 }: ConfidenceTimelineProps): JSX.Element {
   const H = height;
   const model = useMemo(() => {
     if (scores.length < 2) return null;
@@ -43,6 +43,8 @@ export function ConfidenceTimeline({ scores, decisions, pauseThreshold, height =
   }, [scores.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const hasDegraded = (model?.degraded.length ?? 0) > 0;
+  const peak = scores.reduce((m, s) => Math.max(m, s.spaghetti_score), 0);
+  const alerts = decisions.filter((d) => d.action !== "continue");
 
   return (
     <section aria-label="Confidence timeline" className="card">
@@ -67,12 +69,30 @@ export function ConfidenceTimeline({ scores, decisions, pauseThreshold, height =
           </span>
         ) : null}
       </div>
+      {/* DP-UI-V2 §5.1: the threshold is DRAWN AND LABELLED with its number. A
+          curve crossing an unlabelled line proves nothing to a judge watching a
+          video, and SVG text inside a preserveAspectRatio="none" viewBox is
+          distorted, so the label is HTML. */}
+      <div className="timeline-readouts">
+        <span className="readout" data-role="threshold">
+          Pause threshold {pauseThreshold.toFixed(2)}
+        </span>
+        <span className="readout" data-role="peak">
+          Peak {peak.toFixed(2)}
+        </span>
+        <span className="small muted" data-role="events">
+          {alerts.length === 0
+            ? "no escalation yet"
+            : `${alerts.length} escalations, first at frame ${alerts[0]!.frame_index} — ${alerts[0]!.action.replace(/_/g, " ")}`}
+        </span>
+      </div>
       {model === null ? (
         <p className="timeline-empty" role="status">
           Waiting for the first measurements…
         </p>
       ) : (
         <svg
+          data-demo-focus="timeline"
           viewBox={`0 0 ${W} ${H}`}
           preserveAspectRatio="none"
           style={{ width: "100%", height: H, display: "block" }}
@@ -85,34 +105,38 @@ export function ConfidenceTimeline({ scores, decisions, pauseThreshold, height =
             y1={model.thresholdY}
             y2={model.thresholdY}
             stroke="var(--chart-2)"
-            strokeWidth="1.5"
-            strokeDasharray="6 4"
+            strokeWidth="3"
+            strokeDasharray="10 6"
+            className={peak >= pauseThreshold ? "timeline-threshold crossed" : "timeline-threshold"}
           />
-          <text x={W - PAD} y={model.thresholdY - 4} textAnchor="end" fontSize="11" fill="var(--text-muted)">
-            pause threshold
-          </text>
-          <path d={model.conf} fill="none" stroke="var(--chart-3)" strokeWidth="1.5" />
-          <path d={model.spag} fill="none" stroke="var(--chart-1)" strokeWidth="2.5" />
+          <path d={model.conf} fill="none" stroke="var(--chart-3)" strokeWidth="3" />
+          <path
+            d={model.spag}
+            fill="none"
+            stroke="var(--chart-1)"
+            strokeWidth={peak >= pauseThreshold ? 5 : 4}
+            className={peak >= pauseThreshold ? "timeline-curve above" : "timeline-curve"}
+          />
           {model.degraded.map((p, i) => (
-            <circle key={`g${i}`} cx={p.cx} cy={p.cy} r="4" fill="none" stroke="var(--degraded)" strokeWidth="1.5" />
+            <circle key={`g${i}`} cx={p.cx} cy={p.cy} r="6" fill="none" stroke="var(--degraded)" strokeWidth="3" />
           ))}
           {model.markers.map(({ d, cx, cy }) => {
             const title = `${d.action} — ${d.reason_code} @ frame ${d.frame_index}`;
             if (d.action === "request_pause_approval") {
               return (
-                <circle key={title} cx={cx} cy={cy} r="6" fill="var(--chart-2)">
+                <circle key={title} cx={cx} cy={cy} r="9" fill="var(--chart-2)">
                   <title>{title}</title>
                 </circle>
               );
             }
             if (d.action === "capture_evidence") {
               return (
-                <rect key={title} x={cx - 5} y={cy - 5} width="10" height="10" fill="var(--chart-1)">
+                <rect key={title} x={cx - 7} y={cy - 7} width="14" height="14" fill="var(--chart-1)">
                   <title>{title}</title>
                 </rect>
               );
             }
-            const s = 7;
+            const s = 10;
             return (
               <polygon
                 key={title}

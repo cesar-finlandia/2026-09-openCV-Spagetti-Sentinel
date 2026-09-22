@@ -2,15 +2,20 @@ export type ThemeId = "light" | "dark";
 
 export const THEME_STORAGE_KEY = "ss-theme";
 
+/**
+ * DP-UI-V2 §4.4: dark is the default. The camera records dark
+ * (video-config.json -> video_theme), so an unchosen visitor — and every
+ * capture run — gets dark. An explicit light preference is still honoured.
+ */
 function prefers(): ThemeId {
   try {
     if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
-      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
     }
   } catch {
-    /* missing matchMedia — fall through to light */
+    /* missing matchMedia — fall through to dark */
   }
-  return "light";
+  return "dark";
 }
 
 /** Reads localStorage["ss-theme"], else prefers-color-scheme. Never throws. */

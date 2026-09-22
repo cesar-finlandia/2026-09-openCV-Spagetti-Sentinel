@@ -18,21 +18,23 @@ describe("theme", () => {
     expect(initialTheme()).toBe("dark");
   });
 
-  it("initialTheme falls back to matchMedia when nothing is stored", () => {
+  it("initialTheme falls back to matchMedia when nothing is stored (DP-UI-V2 §4.4: dark default)", () => {
+    // the query is now (prefers-color-scheme: light) — a match means the user
+    // explicitly prefers light; anything else gets the camera's theme, dark.
     vi.stubGlobal("matchMedia", () => ({ matches: true }));
-    expect(initialTheme()).toBe("dark");
-    vi.stubGlobal("matchMedia", () => ({ matches: false }));
     expect(initialTheme()).toBe("light");
+    vi.stubGlobal("matchMedia", () => ({ matches: false }));
+    expect(initialTheme()).toBe("dark");
   });
 
-  it("initialTheme returns light when localStorage.getItem throws", () => {
+  it("initialTheme returns dark when localStorage.getItem throws", () => {
     vi.stubGlobal("localStorage", {
       getItem: () => {
         throw new Error("denied");
       },
       setItem: () => {},
     });
-    expect(initialTheme()).toBe("light");
+    expect(initialTheme()).toBe("dark");
   });
 
   it("applyTheme sets dataset.theme and persists", () => {

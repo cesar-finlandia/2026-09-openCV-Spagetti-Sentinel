@@ -204,8 +204,15 @@ export function App() {
     />
   );
 
+  /**
+   * DP-UI-V2 §5.3 — the quiet frame. Nothing loading, nothing pulsing, no
+   * approval outstanding. This is the frame the video cuts back to and the frame
+   * the screenshot is taken from; theme.css forbids any animation while it is set.
+   */
+  const quiet = !busy && !running && pending === null && status !== "connecting";
+
   return (
-    <div className="app">
+    <div className="app" data-quiet={quiet ? "true" : "false"}>
       <AppHeader
         header={header}
         health={health}

@@ -10,7 +10,7 @@ export type DecisionCardProps = {
 
 export function DecisionCard({ decision, envelopes }: DecisionCardProps): JSX.Element {
   return (
-    <section aria-label="Latest decision" className="card">
+    <section aria-label="Latest decision" className="card" data-demo-focus="decision">
       <span className="caption">Latest decision</span>
       {decision === null ? (
         <p className="small muted" role="status">
@@ -18,6 +18,8 @@ export function DecisionCard({ decision, envelopes }: DecisionCardProps): JSX.El
         </p>
       ) : (
         <div
+          key={`${decision.frame_index}:${decision.action}`}
+          className="decision-card"
           style={
             decision.degraded
               ? { borderLeft: "3px solid var(--degraded)", paddingLeft: "var(--sp-3)" }
@@ -29,7 +31,7 @@ export function DecisionCard({ decision, envelopes }: DecisionCardProps): JSX.El
             <span className="mono muted">{decision.reason_code}</span>
             <span className="caption muted">rationale: {decision.rationale_source === "bedrock" ? "bedrock" : "measured fallback"}</span>
           </div>
-          <p className="strong">
+          <p className="readout">
             Frame {decision.frame_index} at {(decision.t_ms / 1000).toFixed(1)} s scored{" "}
             {decision.spaghetti_score.toFixed(2)} against a threshold of {decision.threshold.toFixed(2)}.
           </p>

@@ -7,34 +7,78 @@ export type ScoreTilesProps = {
   threshold: number;
 };
 
-function Tile({
-  label,
-  value,
-  delta,
-  above,
-}: {
-  label: string;
-  value: string;
-  delta: string;
-  above: boolean | null;
-}): JSX.Element {
-  const [ticked, setTicked] = useState(false);
-  const first = useRef(true);
+/**
+ * DP-UI-V2 §6: a value that counts up is legible motion; an instant DOM swap is
+ * invisible at 30 fps. 240 ms, the --motion-base window, honouring reduced motion.
+ */
+function useCountUp(target: number | null, ms = 240): number | null {
+  const [shown, setShown] = useState<number | null>(target);
+  const from = useRef<number | null>(target);
   useEffect(() => {
-    if (first.current) {
-      first.current = false;
+    if (target === null) {
+      setShown(null);
+      from.current = null;
       return;
     }
-    setTicked(true);
-    const id = window.setTimeout(() => setTicked(false), 200);
-    return () => window.clearTimeout(id);
-  }, [value]);
-  const cls = above === null ? "score-tile" : above ? "score-tile above" : "score-tile below";
+    const start = from.current;
+    from.current = target;
+    const reduce =
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (start === null || reduce || start === target) {
+      setShown(target);
+      return;
+    }
+    const t0 = performance.now();
+    let raf = 0;
+    const step = (now: number) => {
+      const p = Math.min(1, (now - t0) / ms);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setShown(start + (target - start) * eased);
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [target, ms]);
+  return shown;
+}
+
+/**
+ * The hero metric. ui-craft §13.1: the route's hero metric is >= 64px — this one
+ * is 72px — and §13.2: exactly one element per route carries data-demo-focus.
+ */
+function Hero({
+  value,
+  above,
+  caption,
+}: {
+  value: number | null;
+  above: boolean;
+  caption: string;
+}): JSX.Element {
+  const shown = useCountUp(value);
   return (
-    <div className={cls}>
+    <div
+      className={above ? "score-tile hero-metric above" : "score-tile hero-metric"}
+      data-demo-focus="score"
+    >
+      <span className="caption">Spaghetti score</span>
+      <div className="hero" aria-live="off">
+        {shown === null ? "—" : shown.toFixed(2)}
+      </div>
+      <div className="small muted">{caption}</div>
+    </div>
+  );
+}
+
+function Tile({ label, value, delta }: { label: string; value: number | null; delta: string }): JSX.Element {
+  const shown = useCountUp(value);
+  return (
+    <div className="score-tile">
       <span className="caption">{label}</span>
-      <div className={ticked ? "readout-lg ticked readout" : "readout-lg"} aria-live="off">
-        {value}
+      <div className="readout-lg" aria-live="off">
+        {shown === null ? "—" : shown.toFixed(2)}
       </div>
       <div className="small muted">{delta}</div>
     </div>
@@ -45,40 +89,29 @@ export function ScoreTiles({ latest, previous, threshold }: ScoreTilesProps): JS
   if (latest === null) {
     return (
       <div className="score-tiles" role="status" aria-label="scores not yet available">
-        <div className="score-tile">
-          <span className="caption">Spaghetti score</span>
-          <div className="readout-lg" aria-hidden="true">
-            —
-          </div>
-          <div className="small muted">waiting for the first frame</div>
-        </div>
-        <div className="score-tile">
-          <span className="caption">Confidence</span>
-          <div className="readout-lg" aria-hidden="true">
-            —
-          </div>
-          <div className="small muted">waiting for the first frame</div>
-        </div>
+        <Hero value={null} above={false} caption="waiting for the first frame" />
+        <Tile label="Confidence" value={null} delta="waiting for the first frame" />
+        <Tile label="Pause threshold" value={threshold} delta="from the deterministic policy" />
       </div>
     );
   }
   const dScore = previous ? latest.spaghetti_score - previous.spaghetti_score : 0;
   const dConf = previous ? latest.confidence - previous.confidence : 0;
-  const fmt = (d: number) => `${d >= 0 ? "+" : ""}${d.toFixed(2)} since frame ${previous ? previous.frame_index : latest.frame_index}`;
+  const fmt = (d: number) =>
+    `${d >= 0 ? "+" : ""}${d.toFixed(2)} since frame ${previous ? previous.frame_index : latest.frame_index}`;
   return (
     <div className="score-tiles">
-      <Tile
-        label="Spaghetti score"
-        value={latest.spaghetti_score.toFixed(2)}
-        delta={previous ? fmt(dScore) : `frame ${latest.frame_index}`}
+      <Hero
+        value={latest.spaghetti_score}
         above={latest.spaghetti_score >= threshold}
+        caption={previous ? fmt(dScore) : `frame ${latest.frame_index}`}
       />
       <Tile
         label="Confidence"
-        value={latest.confidence.toFixed(2)}
+        value={latest.confidence}
         delta={previous ? fmt(dConf) : `frame ${latest.frame_index}`}
-        above={null}
       />
+      <Tile label="Pause threshold" value={threshold} delta="from the deterministic policy" />
     </div>
   );
 }

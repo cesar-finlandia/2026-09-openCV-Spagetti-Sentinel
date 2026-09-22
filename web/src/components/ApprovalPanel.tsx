@@ -27,9 +27,10 @@ export function ApprovalPanel({ pending, onAnswer, busy, error, remainingS }: Ap
       aria-live="assertive"
       aria-label="A human decision is needed"
       className="approval"
+      data-demo-focus="approval"
     >
       <h1 className="h1">A human decision is needed</h1>
-      <p className="strong">
+      <p className="readout">
         Frame {d.frame_index} at {(d.t_ms / 1000).toFixed(1)} s scored {d.spaghetti_score.toFixed(2)}{" "}
         against a threshold of {d.threshold.toFixed(2)}.
       </p>
