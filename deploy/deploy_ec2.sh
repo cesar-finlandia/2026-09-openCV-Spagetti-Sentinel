@@ -79,13 +79,21 @@ else
   # NOTE: grep returns 1 on no-match; with `set -o pipefail` that would abort
   # silently. Temporarily disable pipefail for parsing.
   set +o pipefail
-  BUILD_MARKER="$(echo "$BUILD_OUT" | grep '^BUILD_MARKER=' | cut -d= -f2 || true)"
-  IMAGE_URI="$(echo "$BUILD_OUT" | grep '^IMAGE_URI=' | cut -d= -f2 || true)"
-  IMAGE_DIGEST="$(echo "$BUILD_OUT" | grep '^IMAGE_DIGEST=' | cut -d= -f2 || true)"
+  # buildx progress wraps the VAR= echo lines with \r redraws and ANSI escapes
+  # (the terminal renders them invisibly, so the lines *look* clean while
+  # ^-anchored grep misses them — observed: marker empty while uri/digest
+  # parsed). Sanitize, then match unanchored and take the first hit.
+  BUILD_OUT_CLEAN="$(echo "$BUILD_OUT" | tr -d '\r' | sed -e 's/\x1b\[[0-9;]*[A-Za-z]//g')"
+  BUILD_MARKER="$(echo "$BUILD_OUT_CLEAN" | grep -o 'BUILD_MARKER=[A-Za-z0-9._-]*' | head -1 | cut -d= -f2 || true)"
+  IMAGE_URI="$(echo "$BUILD_OUT_CLEAN" | grep -o 'IMAGE_URI=[^[:space:]]*' | head -1 | cut -d= -f2 || true)"
+  IMAGE_DIGEST="$(echo "$BUILD_OUT_CLEAN" | grep -o 'IMAGE_DIGEST=[^[:space:]]*' | head -1 | cut -d= -f2 || true)"
   set -o pipefail
 fi
 if [ -z "${BUILD_MARKER:-}" ] || [ -z "${IMAGE_URI:-}" ] || [ -z "${IMAGE_DIGEST:-}" ] || [ "$IMAGE_DIGEST" = "None" ]; then
   echo "deploy: build output missing marker/uri/digest (marker='${BUILD_MARKER:-}' uri='${IMAGE_URI:-}' digest='${IMAGE_DIGEST:-}')" >&2
+  DUMP="${TMPDIR:-/tmp}/spaghetti-build-out-failed.log"
+  printf '%s' "$BUILD_OUT" > "$DUMP"
+  echo "deploy: raw build output saved to $DUMP (inspect the BUILD_MARKER= line bytes)" >&2
   exit 1
 fi
 echo "deploy: marker=${BUILD_MARKER} image=${IMAGE_URI} digest=${IMAGE_DIGEST}" >&2

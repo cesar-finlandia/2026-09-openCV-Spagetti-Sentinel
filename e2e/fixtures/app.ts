@@ -42,20 +42,24 @@ const repoRoot = process.cwd();
 
 export const appTest = base.extend<AppFixtures>({
   serverURL: [
-    async ({}, use) => {
+    async ({}, use, testInfo) => {
       const external = process.env.BASE_URL;
       if (external) {
         await use(external.replace(/\/$/, ""));
         return;
       }
       // Test scope (not worker): a fresh server per test gives full
-      // isolation (no 409 cascades from a previous test's run) and lets
-      // uc10 point the evidence vault at a broken path via E2E_BREAK_EVIDENCE.
+      // isolation (no 409 cascades from a previous test's run). uc10 opts
+      // into a broken evidence vault by test title (fixture params resolve
+      // before the test body runs, so a body-set env var would arrive late).
+      const breakEvidence = /dead evidence vault/.test(
+        testInfo.titlePath.join(" "),
+      );
       const port = await freePort();
       const url = `http://127.0.0.1:${port}`;
       const marker = `e2e-${new Date().toISOString().replace(/[:.]/g, "-")}`;
       let evidenceDir = path.join(repoRoot, ".e2e-evidence");
-      if (process.env.E2E_BREAK_EVIDENCE === "1") {
+      if (breakEvidence) {
         evidenceDir = path.join(repoRoot, ".e2e-evidence-block");
         const { writeFileSync } = await import("node:fs");
         writeFileSync(evidenceDir, "not a directory");
@@ -132,8 +136,11 @@ export const appTest = base.extend<AppFixtures>({
       /ResizeObserver loop completed with undelivered notifications/,
     ];
     if (/uc07/.test(title)) {
-      // uc07 deliberately requests a missing evidence key to prove the 404 path.
+      // uc07 deliberately requests a missing evidence key (404) and aborts
+      // every evidence file route (net::ERR_FAILED) to prove both honest
+      // failure paths.
       allowed.push(/Failed to load resource: .*\/api\/evidence\/.*404/);
+      allowed.push(/Failed to load resource: net::ERR_FAILED/);
     }
     if (/uc11/.test(title)) {
       // uc11 deliberately kills /events/stream (twice, then always): the

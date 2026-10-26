@@ -29,15 +29,21 @@ appTest("uc07 every stored evidence URI resolves; missing keys 404 honestly", as
   ];
   expect(uris.length).toBeGreaterThan(0);
 
-  // Backend truth, unaffected by the browser route: every URI resolves with a
-  // video/ or image/ content type.
+  // Backend truth, unaffected by the browser route: every stored URI has a
+  // browser-openable form (file:// locals via /api/evidence/<key> — the same
+  // mapping the UI's EvidencePanel applies) that resolves with a video/ or
+  // image/ content type.
+  const fetchable = (uri: string): string | null => {
+    if (uri.startsWith("s3://")) return null;
+    if (/^https?:\/\//.test(uri)) return uri;
+    const norm = uri.replace(/\\/g, "/");
+    const i = norm.indexOf("runs/");
+    if (i >= 0) return `${serverURL}/api/evidence/${norm.slice(i)}`;
+    return `${serverURL}/${norm.replace(/^\w+:\/+/, "")}`;
+  };
   for (const uri of uris) {
-    const url = uri.startsWith("s3://")
-      ? uri // presigned-link path is asserted below, not fetched
-      : uri.startsWith("http")
-        ? uri
-        : `${serverURL}/${uri.replace(/^\//, "")}`;
-    if (uri.startsWith("s3://")) continue;
+    const url = fetchable(uri);
+    if (url === null) continue; // s3 presigned-link path (not this backend)
     const res = await fetch(url);
     expect(res.status, `GET ${uri}`).toBe(200);
     const ct = res.headers.get("content-type") ?? "";

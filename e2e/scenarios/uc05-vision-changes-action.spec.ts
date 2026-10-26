@@ -31,30 +31,42 @@ appTest("uc05 vision output changes the action, tools manifest, honest rationale
   await expect(traceCard).toBeVisible();
   await expect(traceCard.getByText("Agent tools (4)")).toBeVisible();
 
-  // Score-crosses-threshold ⟺ action flips, on the backend's own envelopes.
-  const scores = new Map<number, number>();
-  for (const e of events) {
-    if (e.step_id !== "perceive" || e.status !== "done") continue;
-    const s = e.payload?.["scores"] as Record<string, unknown>;
-    scores.set(Number(s["frame_index"]), Number(s["spaghetti_score"]));
-  }
-  let threshold = 0.72;
-  let checked = 0;
-  for (const e of events) {
-    if (e.step_id !== "decide" || e.status !== "done") continue;
-    const d = e.payload?.["decision"] as Record<string, unknown>;
-    if (d["degraded"] === true) continue;
-    threshold = Number(d["threshold"] ?? threshold);
-    const score = scores.get(Number(d["frame_index"]));
-    if (score === undefined) continue;
-    checked += 1;
-    if (score >= threshold) {
-      expect(String(d["action"])).toEqual("request_pause_approval");
-    } else {
-      expect(String(d["action"])).not.toEqual("request_pause_approval");
+  // The sustain rule (app/agent/policy.py: a pause needs SUSTAIN_FRAMES=3
+  // consecutive sampled frames with score >= pause threshold and confidence
+  // >= floor): every pause row is the third such frame, no pause row scores
+  // below its threshold, and at least one pause exists — the vision number,
+  // not a chatbot, changed what the system did.
+  const CONF_FLOOR = 0.55;
+  const rows = events
+    .filter((e) => e.step_id === "decide" && e.status === "done")
+    .map((e) => e.payload?.["decision"] as Record<string, unknown>)
+    .filter((d) => d["degraded"] !== true)
+    .map((d) => ({
+      frame: Number(d["frame_index"]),
+      score: Number(d["spaghetti_score"]),
+      conf: Number(d["confidence"]),
+      action: String(d["action"]),
+      thr: Number(d["threshold"]),
+    }))
+    .sort((a, b) => a.frame - b.frame);
+  expect(rows.length).toBeGreaterThan(10);
+  const pauses = rows.filter((r) => r.action === "request_pause_approval");
+  expect(pauses.length).toBeGreaterThan(0);
+  for (const p of pauses) {
+    expect(p.score).toBeGreaterThanOrEqual(p.thr);
+    expect(p.conf).toBeGreaterThanOrEqual(CONF_FLOOR);
+    const i = rows.indexOf(p);
+    expect(i).toBeGreaterThanOrEqual(2);
+    for (const q of [rows[i - 2]!, rows[i - 1]!]) {
+      expect(q.score).toBeGreaterThanOrEqual(p.thr);
+      expect(q.conf).toBeGreaterThanOrEqual(CONF_FLOOR);
     }
   }
-  expect(checked).toBeGreaterThan(10);
+  for (const r of rows) {
+    if (r.score < r.thr) {
+      expect(r.action).not.toEqual("request_pause_approval");
+    }
+  }
 
   // Rationale exists only AFTER the first decide — never before the gate.
   const seqOf = (id: string) =>

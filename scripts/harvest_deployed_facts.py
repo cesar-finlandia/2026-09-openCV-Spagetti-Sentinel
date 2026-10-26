@@ -84,10 +84,9 @@ def clear_stuck_run(url: str) -> str | None:
     # answer any approval it is waiting on, then let it finish
     for _ in range(40):
         snap = get(url, f"/events?trace_id={run_id}")
-        pending = pending_approval(snap.get("events", []))
-        if pending:
+        for ap in pending_approvals(snap.get("events", [])):
             post(url, f"/api/runs/{run_id}/approve",
-                 {"approval_id": pending, "approved": True})
+                 {"approval_id": ap, "approved": True})
         rec = get(url, f"/api/runs/{run_id}")
         if rec.get("status") not in ("running", "pending", "awaiting_approval"):
             return f"cleared a stuck run {run_id} (status {rec.get('status')})"
@@ -95,25 +94,53 @@ def clear_stuck_run(url: str) -> str | None:
     raise Fail(f"run {run_id} would not clear - stop and clear it by hand before the take")
 
 
-def pending_approval(events: list) -> str | None:
-    for e in reversed(events):
+def pending_approvals(events: list) -> list[str]:
+    """Every approval still waiting for a human, oldest first.
+
+    The deployed API nests the id: step_id == "await-approval" carries
+    {"approval_id", "decision"}, and step_id == "approval-resolved" marks
+    it answered (web/scripts/screenshots.mjs autoApprover reads the same
+    shape). The legacy flat shape (step == "approval" with top-level
+    approval_id / requires_human) is kept so mock proofs still pass.
+    """
+    resolved = {
+        (e.get("payload") or {}).get("approval_id")
+        for e in events if e.get("step_id") == "approval-resolved"
+    }
+    out: list[str] = []
+    for e in events:
         p = e.get("payload") or {}
-        if e.get("step") == "approval" and p.get("approval_id") and not p.get("resolved"):
-            return str(p["approval_id"])
-        if p.get("requires_human") and p.get("approval_id"):
-            return str(p["approval_id"])
-    return None
+        aid = p.get("approval_id")
+        if e.get("step_id") == "await-approval" and aid and aid not in resolved:
+            if str(aid) not in out:
+                out.append(str(aid))
+            continue
+        if e.get("step") == "approval" and aid and not p.get("resolved"):
+            if str(aid) not in out:
+                out.append(str(aid))
+        elif p.get("requires_human") and aid:
+            if str(aid) not in out:
+                out.append(str(aid))
+    return out
+
+
+def pending_approval(events: list) -> str | None:
+    all_pending = pending_approvals(events)
+    return all_pending[0] if all_pending else None
 
 
 def drain(url: str, run_id: str, auto_approve: bool = True) -> list:
     """Poll to terminal state, approving whatever is asked. Returns the events."""
     events: list = []
-    for _ in range(200):
+    # A spaghetti run asks ~37 approvals; at ~2-4 s per poll cycle with
+    # instant approval the run still needs several minutes of frame
+    # processing, so the budget is generous. This is client patience, not
+    # a product claim.
+    for _ in range(400):
         snap = get(url, f"/events?trace_id={run_id}")
         events = snap.get("events", []) or events
         if auto_approve:
-            ap = pending_approval(events)
-            if ap:
+            for ap in pending_approvals(events):
                 post(url, f"/api/runs/{run_id}/approve", {"approval_id": ap, "approved": True})
         rec = get(url, f"/api/runs/{run_id}")
         if rec.get("status") not in ("running", "pending", "awaiting_approval"):
@@ -127,8 +154,11 @@ def decisions_of(events: list) -> list:
     out = []
     for e in events:
         p = e.get("payload") or {}
-        if "action" in p and "spaghetti_score" in p:
-            out.append(p)
+        # deployed shape nests the decision (decide -> {"decision": {...}});
+        # the flat shape is kept so mock proofs still pass.
+        d = p.get("decision") if isinstance(p.get("decision"), dict) else p
+        if "action" in d and "spaghetti_score" in d:
+            out.append(d)
     return out
 
 
@@ -136,9 +166,31 @@ def scores_of(events: list) -> list:
     out = []
     for e in events:
         p = e.get("payload") or {}
-        if "spaghetti_score" in p and "frame_index" in p:
-            out.append(p)
+        # deployed shape nests the scores (perceive -> {"scores": {...}}).
+        s = p.get("scores") if isinstance(p.get("scores"), dict) else p
+        if "spaghetti_score" in s and "frame_index" in s:
+            out.append(s)
     return out
+
+
+def _evidence_uris(events: list) -> set[str]:
+    """Distinct evidence clips referenced by a run.
+
+    Deployed shape: evidence-stored carries {"uri": ...} and decide
+    carries {"decision": {"evidence_uri": ...}}; the flat
+    payload.evidence_uri shape is kept so mock proofs still pass.
+    """
+    uris: set[str] = set()
+    for e in events:
+        p = e.get("payload") or {}
+        if p.get("uri") and e.get("step_id") == "evidence-stored":
+            uris.add(str(p["uri"]))
+        if p.get("evidence_uri"):
+            uris.add(str(p["evidence_uri"]))
+        d = p.get("decision")
+        if isinstance(d, dict) and d.get("evidence_uri"):
+            uris.add(str(d["evidence_uri"]))
+    return uris
 
 
 def sweep(url: str) -> dict:
@@ -179,10 +231,7 @@ def sweep(url: str) -> dict:
                  for k in ("frame_index", "t_ms", "spaghetti_score", "confidence",
                            "threshold", "reason_code", "requires_human", "rationale_source")}
                 if pause else None),
-            "evidence_clips": len({
-                str((e.get("payload") or {}).get("evidence_uri"))
-                for e in events if (e.get("payload") or {}).get("evidence_uri")
-            }),
+            "evidence_clips": len(_evidence_uris(events)),
             "wall_clock_s": wall,
         }
     return facts

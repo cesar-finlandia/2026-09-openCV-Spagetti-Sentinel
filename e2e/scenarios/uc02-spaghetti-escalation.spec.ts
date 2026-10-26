@@ -18,7 +18,7 @@ appTest("uc02 spaghetti run escalates to a human pause approval", async ({
   const dialog = page.getByRole("alertdialog");
   await expect(dialog).toBeVisible({ timeout: 90_000 });
   const sentence = await dialog.innerText();
-  const m = sentence.match(/scored ([\d.]+)\s+against a threshold of ([\d.]+)/);
+  const m = sentence.match(/scored (\d+\.\d+)\s+against a threshold of (\d+\.\d+)/);
   expect(m, `dialog sentence quotes score and threshold: ${sentence}`).not.toBeNull();
   expect(Number(m![1])).toBeGreaterThanOrEqual(Number(m![2]));
 

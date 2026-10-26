@@ -8,7 +8,7 @@ export type BackendBadgeProps = { header: RunHeader; health: Health | null };
  * DP-ARCHITECTURE §2: this chip is the only place the COOL claim appears on
  * screen, and it tells the truth. `cool_version === null` means the runtime
  * probe found no COOL build and the baseline is executing — the chip says so in
- * words, because the video records this element (data-demo-focus="backend") and
+ * words, because the video records this element (the backend anchor) and
  * a judge reads the repo.
  */
 export function BackendBadge({ header, health }: BackendBadgeProps): JSX.Element {

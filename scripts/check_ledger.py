@@ -64,10 +64,10 @@ def main() -> int:
             problems.append(f"{label}: no segment says {phrase!r}")
 
     # the spoken forms, checked against the harvested values
-    if pause.get("frame_index") != 195:
-        problems.append(f"pause frame is now {pause.get('frame_index')}, the script says 195 "
-                        "(s5: 'frame one hundred and ninety five')")
-    want("pause frame", pause.get("frame_index"), "frame one hundred and ninety five")
+    if pause.get("frame_index") != 192:
+        problems.append(f"pause frame is now {pause.get('frame_index')}, the script says 192 "
+                        "(s5: 'frame one hundred and ninety two')")
+    want("pause frame", pause.get("frame_index"), "frame one hundred and ninety two")
 
     if pause.get("threshold") not in (0.72,):
         problems.append(f"pause threshold is now {pause.get('threshold')}, the script says 0.72")
@@ -78,8 +78,8 @@ def main() -> int:
         problems.append(f"the pause is now at {t} ms; the script says six and a half seconds")
 
     c = pause.get("confidence")
-    if c is None or abs(round(c, 2) - 0.77) > 0.005:
-        problems.append(f"confidence at the pause is now {c}; the script says 0.77")
+    if c is None or abs(round(c, 2) - 0.71) > 0.005:
+        problems.append(f"confidence at the pause is now {c}; the script says 0.71")
 
     p = li["peak_spaghetti_score"]
     if p is None or abs(round(p, 2) - 0.27) > 0.005:

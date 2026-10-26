@@ -60,11 +60,14 @@ appTest("uc06 backend switch is reported and both backends do real work", async 
     for (const op of OPS) expect(ops).toContain(op);
 
     // The badge is honest about what is installed on this host.
-    const badge = page.getByLabel(/backend|COOL backend/);
     if (health.cool_version !== null) {
-      await expect(badge).toHaveAttribute("aria-label", `COOL backend on ${health.arch}`);
+      await expect(
+        page.getByLabel(`COOL backend on ${health.arch}`, { exact: true }),
+      ).toBeVisible();
     } else {
-      await expect(badge).toHaveAttribute("aria-label", "baseline OpenCV backend");
+      await expect(
+        page.getByLabel("baseline OpenCV backend", { exact: true }),
+      ).toBeVisible();
     }
     seen[backend] = { opencv: String(p["opencv_version"]), backend: String(p["backend"]), ops };
   }

@@ -62,3 +62,15 @@ web/.smoke/
 node_modules/
 dist/
 deploy/cool/*.whl
+
+# DP-E2E-BROWSER-TESTING
+e2e/artifacts/
+e2e/.auth/
+.e2e-evidence/
+.e2e-evidence-block
+playwright-report/
+test-results/
+.run_agent.lock
+.run_sequential.lock
+.run_step_records.txt
+supervisor.log
